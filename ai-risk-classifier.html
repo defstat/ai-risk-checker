@@ -620,7 +620,7 @@
 
         <div class="question">
           <label>Α2. Σε ποιον τομέα εφαρμόζεται;</label>
-          <div class="hint">Βάσει Box 2.1 του OECD Guidance</div>
+          <div class="hint">Box 2.1 του OECD Guidance</div>
           <div class="options" id="q-A2">
             <label class="option" onclick="selectOption('A2', 0, this)">
               <input type="radio" name="A2"><div class="radio-dot"></div>
@@ -692,7 +692,7 @@
 
         <div class="question">
           <label>Β1. Ποια κατηγορία δεδομένων επεξεργάζεται;</label>
-          <div class="hint">Βάσει Box 2.3 - Κίνδυνοι ποιότητας δεδομένων</div>
+          <div class="hint">Κίνδυνοι ιδιωτικότητας & διακυβέρνησης δεδομένων</div>
           <div class="options" id="q-B1">
             <label class="option" onclick="selectOption('B1', 0, this)">
               <input type="radio" name="B1"><div class="radio-dot"></div>
@@ -885,7 +885,7 @@
 
         <div class="question">
           <label>Δ2. Μπορεί ο πολίτης να αμφισβητήσει/προσφύγει κατά απόφασης;</label>
-          <div class="hint">Βάσει Step 6 - Αποκατάσταση</div>
+          <div class="hint">Step 6 – Remediation & grievance mechanisms (ένσταση/παράπονα/διόρθωση)</div>
           <div class="options" id="q-D2">
             <label class="option" onclick="selectOption('D2', 0, this)">
               <input type="radio" name="D2"><div class="radio-dot"></div>
@@ -944,7 +944,7 @@
 </main>
 
 <footer>
-  Βάσει: <a href="https://doi.org/10.1787/41671712-en">OECD Due Diligence Guidance for Responsible AI (2026)</a> ·
+  Βάσει: <a href="https://doi.org/10.1787/41671712-en" target="_blank">OECD Due Diligence Guidance for Responsible AI (2026)</a> ·
   Συμπληρωματικό προς EU AI Act &amp; GDPR/DPIA ·
   Το εργαλείο αυτό δεν υποκαθιστά νομική συμβουλή
 </footer>
@@ -952,7 +952,7 @@
 <script>
   const scores = {};
   let answeredCount = 0;
-  const totalQuestions = 12;
+  const totalQuestions = 10;
 
   function selectOption(qId, score, el) {
     const group = document.querySelectorAll(`[name="${qId}"]`);
