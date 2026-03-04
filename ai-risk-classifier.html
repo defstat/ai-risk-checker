@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Εργαλείο Κατηγοριοποίησης Κινδύνου ΤΝ</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Greek:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2330;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #7d8590;
+    --accent: #2f81f7;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --orange: #db6d28;
+    --red: #f85149;
+    --low: #1a3a2a;
+    --low-border: #3fb950;
+    --medium: #3a2a0a;
+    --medium-border: #d29922;
+    --high: #3a1a0a;
+    --high-border: #db6d28;
+    --critical: #3a0a0a;
+    --critical-border: #f85149;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans Greek', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo {
+    width: 40px;
+    height: 40px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  header h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  header p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .badge {
+    margin-left: auto;
+    background: #1a2540;
+    border: 1px solid #2f4080;
+    color: #7aa2f7;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  .intro {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .intro strong { color: var(--text); }
+
+  .progress-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .section.active {
+    border-color: var(--accent);
+  }
+
+  .section-header {
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .section-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .section.active .section-num,
+  .section.completed .section-num {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .section.completed .section-num {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .section-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .section-score {
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .section-body {
+    padding: 0 24px 24px;
+    display: none;
+  }
+
+  .section.active .section-body {
+    display: block;
+  }
+
+  .question {
+    margin-bottom: 20px;
+  }
+
+  .question label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .question .hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: -6px;
+    margin-bottom: 10px;
+    font-style: italic;
+  }
+
+  .options {
+    display: grid;
+    gap: 8px;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 13px;
+  }
+
+  .option:hover {
+    border-color: var(--accent);
+    background: #1c2a3a;
+  }
+
+  .option.selected {
+    border-color: var(--accent);
+    background: #1a2540;
+    color: var(--text);
+  }
+
+  .option input[type="radio"] { display: none; }
+
+  .radio-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .option.selected .radio-dot {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .option.selected .radio-dot::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+  }
+
+  .score-tag {
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .score-0 { background: #1a3a2a; color: var(--green); }
+  .score-1 { background: #2a2a1a; color: var(--yellow); }
+  .score-2 { background: #3a2a1a; color: var(--orange); }
+  .score-3 { background: #3a1a1a; color: var(--red); }
+
+  .section-nav {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    font-family: 'IBM Plex Sans Greek', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-primary:hover { background: #388bfd; }
+
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover { border-color: var(--accent); }
+
+  .btn-calculate {
+    background: var(--green);
+    color: #0d1117;
+    font-weight: 600;
+  }
+
+  .btn-calculate:hover { background: #4fc362; }
+
+  /* Result */
+  #result {
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-card {
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 24px;
+    border: 2px solid;
+  }
+
+  .result-low { background: var(--low); border-color: var(--low-border); }
+  .result-medium { background: var(--medium); border-color: var(--medium-border); }
+  .result-high { background: var(--high); border-color: var(--high-border); }
+  .result-critical { background: var(--critical); border-color: var(--critical-border); }
+
+  .result-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.8;
+  }
+
+  .result-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .result-score {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    opacity: 0.7;
+    margin-bottom: 20px;
+  }
+
+  .result-desc {
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .requirements {
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .requirements h3 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    opacity: 0.8;
+  }
+
+  .req-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 13px;
+  }
+
+  .req-item:last-child { border-bottom: none; }
+
+  .req-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .req-text strong {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .req-text span {
+    font-size: 12px;
+    opacity: 0.7;
+  }
+
+  .breakdown {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .breakdown h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 12px;
+  }
+
+  .breakdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .breakdown-label {
+    font-size: 13px;
+    width: 200px;
+    flex-shrink: 0;
+    color: var(--text-muted);
+  }
+
+  .breakdown-bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .breakdown-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.8s ease;
+  }
+
+  .fill-0 { background: var(--green); width: 0%; }
+  .fill-33 { background: var(--yellow); }
+  .fill-67 { background: var(--orange); }
+  .fill-100 { background: var(--red); }
+
+  .breakdown-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    width: 40px;
+    text-align: right;
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-reset {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-reset:hover {
+    color: var(--text);
+    border-color: var(--text-muted);
+  }
+
+  footer {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--text-muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 600px) {
+    header { padding: 16px 20px; }
+    main { padding: 24px 16px; }
+    .breakdown-label { width: 140px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">ΤΝ</div>
+  <div>
+    <h1>Εργαλείο Κατηγοριοποίησης Κινδύνου ΤΝ</h1>
+    <p>Ελληνικό Δημόσιο · Βάσει OECD Due Diligence Guidance for Responsible AI (2026)</p>
+  </div>
+  <span class="badge">v1.0</span>
+</header>
+
+<main>
+  <div class="intro">
+    Συμπληρώστε τις παρακάτω ενότητες για κάθε σύστημα ΤΝ που εξετάζετε. Το εργαλείο υπολογίζει το <strong>επίπεδο κινδύνου</strong> και τις <strong>απαιτήσεις καταγραφής</strong> βάσει του OECD RBC Due Diligence Framework. Βασισμένο στις αρχές <strong>αναλογικότητας</strong> — τα low-risk συστήματα δεν απαιτούν πλήρη τεκμηρίωση.
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <span class="progress-label" id="progressLabel">0 / 12 ερωτήσεις</span>
+  </div>
+
+  <div id="questionnaire">
+
+    <!-- Section A -->
+    <div class="section active" id="sec-A">
+      <div class="section-header" onclick="toggleSection('A')">
+        <div class="section-num">A</div>
+        <div>
+          <div class="section-title">Φύση και Σκοπός Συστήματος</div>
+          <div class="section-subtitle">Τι κάνει το σύστημα και σε ποιον απευθύνεται</div>
+        </div>
+        <div class="section-score" id="score-A">—</div>
+      </div>
+      <div class="section-body">
+
+        <div class="question">
+          <label>Α1. Το σύστημα λαμβάνει αποφάσεις που επηρεάζουν πολίτες;</label>
+          <div class="options" id="q-A1">
+            <label class="option" onclick="selectOption('A1', 0, this)">
+              <input type="radio" name="A1"><div class="radio-dot"></div>
+              Όχι — εσωτερικό εργαλείο χωρίς επίπτωση σε πολίτες
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('A1', 1, this)">
+              <input type="radio" name="A1"><div class="radio-dot"></div>
+              Έμμεσα — υποστηρίζει αποφάσεις αλλά τελική κρίση από άνθρωπο
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('A1', 2, this)">
+              <input type="radio" name="A1"><div class="radio-dot"></div>
+              Άμεσα — οι αποφάσεις του επηρεάζουν δικαιώματα/παροχές πολιτών
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('A1', 3, this)">
+              <input type="radio" name="A1"><div class="radio-dot"></div>
+              Αυτόματα — λαμβάνει αποφάσεις χωρίς ανθρώπινη παρέμβαση
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <label>Α2. Σε ποιον τομέα εφαρμόζεται;</label>
+          <div class="hint">Βάσει Box 2.1 του OECD Guidance</div>
+          <div class="options" id="q-A2">
+            <label class="option" onclick="selectOption('A2', 0, this)">
+              <input type="radio" name="A2"><div class="radio-dot"></div>
+              Εσωτερική διαχείριση (π.χ. IT, logistics, διαχείριση εγγράφων)
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('A2', 1, this)">
+              <input type="radio" name="A2"><div class="radio-dot"></div>
+              Δημόσιες υπηρεσίες γενικής χρήσης (π.χ. πληροφόρηση, chatbot)
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('A2', 2, this)">
+              <input type="radio" name="A2"><div class="radio-dot"></div>
+              Υγεία, εκπαίδευση, κοινωνικές παροχές, απασχόληση
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('A2', 3, this)">
+              <input type="radio" name="A2"><div class="radio-dot"></div>
+              Ασφάλεια, αστυνόμευση, δικαιοσύνη, μετανάστευση, κρίσιμες υποδομές
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <label>Α3. Πόσοι πολίτες επηρεάζονται;</label>
+          <div class="hint">Εύρος επίπτωσης — Scope (Πίνακας 2.3)</div>
+          <div class="options" id="q-A3">
+            <label class="option" onclick="selectOption('A3', 0, this)">
+              <input type="radio" name="A3"><div class="radio-dot"></div>
+              Κανείς / μόνο εσωτερικοί χρήστες (&lt;50 άτομα)
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('A3', 1, this)">
+              <input type="radio" name="A3"><div class="radio-dot"></div>
+              Περιορισμένος αριθμός (&lt;1.000 άτομα)
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('A3', 2, this)">
+              <input type="radio" name="A3"><div class="radio-dot"></div>
+              Σημαντικός αριθμός (1.000 – 100.000 άτομα)
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('A3', 3, this)">
+              <input type="radio" name="A3"><div class="radio-dot"></div>
+              Μεγάλο κοινό (&gt;100.000 άτομα ή εθνικής εμβέλειας)
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="section-nav">
+          <button class="btn btn-primary" onclick="nextSection('A','B')">Επόμενο →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section B -->
+    <div class="section" id="sec-B">
+      <div class="section-header" onclick="toggleSection('B')">
+        <div class="section-num">B</div>
+        <div>
+          <div class="section-title">Δεδομένα και Ιδιωτικότητα</div>
+          <div class="section-subtitle">Ποια δεδομένα επεξεργάζεται το σύστημα</div>
+        </div>
+        <div class="section-score" id="score-B">—</div>
+      </div>
+      <div class="section-body">
+
+        <div class="question">
+          <label>Β1. Ποια κατηγορία δεδομένων επεξεργάζεται;</label>
+          <div class="hint">Βάσει Box 2.3 — Κίνδυνοι ποιότητας δεδομένων</div>
+          <div class="options" id="q-B1">
+            <label class="option" onclick="selectOption('B1', 0, this)">
+              <input type="radio" name="B1"><div class="radio-dot"></div>
+              Μόνο ανώνυμα ή συγκεντρωτικά δεδομένα
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('B1', 1, this)">
+              <input type="radio" name="B1"><div class="radio-dot"></div>
+              Προσωπικά δεδομένα συνήθους κατηγορίας
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('B1', 2, this)">
+              <input type="radio" name="B1"><div class="radio-dot"></div>
+              Ευαίσθητα προσωπικά δεδομένα (υγεία, οικονομικά, θρήσκευμα κ.λπ.)
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('B1', 3, this)">
+              <input type="radio" name="B1"><div class="radio-dot"></div>
+              Βιομετρικά, γενετικά ή δεδομένα παρακολούθησης
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <label>Β2. Αφορά ευάλωτες ομάδες;</label>
+          <div class="options" id="q-B2">
+            <label class="option" onclick="selectOption('B2', 0, this)">
+              <input type="radio" name="B2"><div class="radio-dot"></div>
+              Όχι — γενικός πληθυσμός
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('B2', 1, this)">
+              <input type="radio" name="B2"><div class="radio-dot"></div>
+              Εν μέρει — μπορεί να συμπεριλαμβάνει ευάλωτους
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('B2', 3, this)">
+              <input type="radio" name="B2"><div class="radio-dot"></div>
+              Ναι — κυρίως ανήλικοι, ηλικιωμένοι, ΑΜΕΑ, πρόσφυγες
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="section-nav">
+          <button class="btn btn-secondary" onclick="prevSection('B','A')">← Πίσω</button>
+          <button class="btn btn-primary" onclick="nextSection('B','C')">Επόμενο →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section C -->
+    <div class="section" id="sec-C">
+      <div class="section-header" onclick="toggleSection('C')">
+        <div class="section-num">C</div>
+        <div>
+          <div class="section-title">Σοβαρότητα Πιθανής Βλάβης</div>
+          <div class="section-subtitle">Τι μπορεί να πάει στραβά και πόσο αναστρέψιμο είναι</div>
+        </div>
+        <div class="section-score" id="score-C">—</div>
+      </div>
+      <div class="section-body">
+
+        <div class="question">
+          <label>Γ1. Ποια η σοβαρότητα πιθανής βλάβης σε πολίτη;</label>
+          <div class="hint">Κλίμακα επίπτωσης — Scale (Πίνακας 2.3)</div>
+          <div class="options" id="q-C1">
+            <label class="option" onclick="selectOption('C1', 0, this)">
+              <input type="radio" name="C1"><div class="radio-dot"></div>
+              Αμελητέα — καμία ουσιαστική επίπτωση
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('C1', 1, this)">
+              <input type="radio" name="C1"><div class="radio-dot"></div>
+              Ήσσονος σημασίας — μικρή ταλαιπωρία ή καθυστέρηση
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('C1', 2, this)">
+              <input type="radio" name="C1"><div class="radio-dot"></div>
+              Σημαντική — οικονομική ζημία ή άρνηση υπηρεσίας
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('C1', 3, this)">
+              <input type="radio" name="C1"><div class="radio-dot"></div>
+              Σοβαρή — προσβολή θεμελιωδών δικαιωμάτων, σωματική/ψυχική βλάβη
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <label>Γ2. Είναι αναστρέψιμη η πιθανή βλάβη;</label>
+          <div class="hint">Αναστρεψιμότητα — Irremediability (Πίνακας 2.3)</div>
+          <div class="options" id="q-C2">
+            <label class="option" onclick="selectOption('C2', 0, this)">
+              <input type="radio" name="C2"><div class="radio-dot"></div>
+              Πλήρως αναστρέψιμη — εύκολη αποκατάσταση
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('C2', 1, this)">
+              <input type="radio" name="C2"><div class="radio-dot"></div>
+              Εν μέρει αναστρέψιμη — με προσπάθεια αποκαθίσταται
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('C2', 2, this)">
+              <input type="radio" name="C2"><div class="radio-dot"></div>
+              Δύσκολα αναστρέψιμη — χρονοβόρα αποκατάσταση
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('C2', 3, this)">
+              <input type="radio" name="C2"><div class="radio-dot"></div>
+              Μη αναστρέψιμη — μόνιμη βλάβη
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <label>Γ3. Πόσο πιθανή είναι μια αρνητική επίπτωση;</label>
+          <div class="hint">Πιθανότητα — Likelihood (Πίνακας 2.3)</div>
+          <div class="options" id="q-C3">
+            <label class="option" onclick="selectOption('C3', 0, this)">
+              <input type="radio" name="C3"><div class="radio-dot"></div>
+              Απίθανη — δεν έχουν αναφερθεί παρόμοια περιστατικά
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('C3', 1, this)">
+              <input type="radio" name="C3"><div class="radio-dot"></div>
+              Πιθανή σε ακραία σενάρια
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('C3', 2, this)">
+              <input type="radio" name="C3"><div class="radio-dot"></div>
+              Αρκετά πιθανή — υπάρχουν παρόμοια περιστατικά αλλού
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('C3', 3, this)">
+              <input type="radio" name="C3"><div class="radio-dot"></div>
+              Πολύ πιθανή — γνωστός κίνδυνος για αυτή την κατηγορία
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="section-nav">
+          <button class="btn btn-secondary" onclick="prevSection('C','B')">← Πίσω</button>
+          <button class="btn btn-primary" onclick="nextSection('C','D')">Επόμενο →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section D -->
+    <div class="section" id="sec-D">
+      <div class="section-header" onclick="toggleSection('D')">
+        <div class="section-num">Δ</div>
+        <div>
+          <div class="section-title">Διαφάνεια και Εποπτεία</div>
+          <div class="section-subtitle">Έλεγχος και λογοδοσία του συστήματος</div>
+        </div>
+        <div class="section-score" id="score-D">—</div>
+      </div>
+      <div class="section-body">
+
+        <div class="question">
+          <label>Δ1. Υπάρχει ανθρώπινη εποπτεία στις αποφάσεις;</label>
+          <div class="options" id="q-D1">
+            <label class="option" onclick="selectOption('D1', 0, this)">
+              <input type="radio" name="D1"><div class="radio-dot"></div>
+              Πλήρης — άνθρωπος λαμβάνει κάθε τελική απόφαση
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('D1', 1, this)">
+              <input type="radio" name="D1"><div class="radio-dot"></div>
+              Μερική — περιοδικός έλεγχος από ανθρώπους
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('D1', 2, this)">
+              <input type="radio" name="D1"><div class="radio-dot"></div>
+              Ελάχιστη — μόνο σε περίπτωση ενστάσεων
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('D1', 3, this)">
+              <input type="radio" name="D1"><div class="radio-dot"></div>
+              Καμία — πλήρως αυτοματοποιημένο
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <label>Δ2. Μπορεί ο πολίτης να αμφισβητήσει/προσφύγει κατά απόφασης;</label>
+          <div class="hint">Βάσει Step 6 — Αποκατάσταση</div>
+          <div class="options" id="q-D2">
+            <label class="option" onclick="selectOption('D2', 0, this)">
+              <input type="radio" name="D2"><div class="radio-dot"></div>
+              Ναι — υπάρχει σαφής διαδικασία ένστασης/προσφυγής
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('D2', 1, this)">
+              <input type="radio" name="D2"><div class="radio-dot"></div>
+              Εν μέρει — είναι δυνατόν αλλά όχι διαφανής
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('D2', 3, this)">
+              <input type="radio" name="D2"><div class="radio-dot"></div>
+              Όχι — δεν υπάρχει μηχανισμός προσφυγής
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="section-nav">
+          <button class="btn btn-secondary" onclick="prevSection('D','C')">← Πίσω</button>
+          <button class="btn btn-calculate" onclick="calculateRisk()">⚡ Υπολογισμός Κινδύνου</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end questionnaire -->
+
+  <!-- Result -->
+  <div id="result">
+
+    <div class="result-card" id="resultCard">
+      <div class="result-label" id="resultLabel">ΕΠΙΠΕΔΟ ΚΙΝΔΥΝΟΥ</div>
+      <div class="result-title" id="resultTitle">—</div>
+      <div class="result-score" id="resultScore">—</div>
+      <div class="result-desc" id="resultDesc">—</div>
+
+      <div class="requirements">
+        <h3>Απαιτήσεις Καταγραφής στο Μητρώο</h3>
+        <div id="reqList"></div>
+      </div>
+    </div>
+
+    <div class="breakdown">
+      <h3>Ανάλυση ανά Ενότητα</h3>
+      <div id="breakdownItems"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-calculate" onclick="window.print()">🖨️ Εκτύπωση</button>
+      <button class="btn btn-reset" onclick="resetTool()">↺ Νέα Αξιολόγηση</button>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  Βάσει: <a href="https://doi.org/10.1787/41671712-en">OECD Due Diligence Guidance for Responsible AI (2026)</a> ·
+  Συμπληρωματικό προς EU AI Act &amp; GDPR/DPIA ·
+  Το εργαλείο αυτό δεν υποκαθιστά νομική συμβουλή
+</footer>
+
+<script>
+  const scores = {};
+  let answeredCount = 0;
+  const totalQuestions = 12;
+
+  function selectOption(qId, score, el) {
+    const group = document.querySelectorAll(`[name="${qId}"]`);
+    group.forEach(r => r.closest('.option').classList.remove('selected'));
+    el.classList.add('selected');
+    const prev = scores[qId] !== undefined;
+    scores[qId] = score;
+    if (!prev) {
+      answeredCount++;
+      updateProgress();
+    }
+    updateSectionScore(qId[0]);
+  }
+
+  function updateProgress() {
+    const pct = Math.round((answeredCount / totalQuestions) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = `${answeredCount} / ${totalQuestions} ερωτήσεις`;
+  }
+
+  function updateSectionScore(sec) {
+    const map = {
+      'A': ['A1','A2','A3'],
+      'B': ['B1','B2'],
+      'C': ['C1','C2','C3'],
+      'D': ['D1','D2']
+    };
+    const qs = map[sec];
+    let total = 0;
+    let answered = 0;
+    qs.forEach(q => {
+      if (scores[q] !== undefined) {
+        total += scores[q];
+        answered++;
+      }
+    });
+    const el = document.getElementById(`score-${sec}`);
+    if (answered > 0) {
+      el.textContent = `${total} βαθμοί`;
+    }
+    if (answered === qs.length) {
+      document.getElementById(`sec-${sec}`).classList.add('completed');
+    }
+  }
+
+  function toggleSection(sec) {
+    const el = document.getElementById(`sec-${sec}`);
+    el.classList.toggle('active');
+  }
+
+  function nextSection(current, next) {
+    document.getElementById(`sec-${current}`).classList.remove('active');
+    const nextEl = document.getElementById(`sec-${next}`);
+    nextEl.classList.add('active');
+    nextEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function prevSection(current, prev) {
+    document.getElementById(`sec-${current}`).classList.remove('active');
+    document.getElementById(`sec-${prev}`).classList.add('active');
+  }
+
+  function calculateRisk() {
+    // Calculate total
+    let total = 0;
+    Object.values(scores).forEach(s => total += s);
+    const max = 36;
+
+    // Section totals
+    const sA = (scores['A1']||0) + (scores['A2']||0) + (scores['A3']||0);
+    const sB = (scores['B1']||0) + (scores['B2']||0);
+    const sC = (scores['C1']||0) + (scores['C2']||0) + (scores['C3']||0);
+    const sD = (scores['D1']||0) + (scores['D2']||0);
+
+    // Determine level
+    let level, levelClass, title, desc, reqs;
+
+    // Also check for automatic critical flags
+    const isCritical = scores['A2'] === 3 || scores['C1'] === 3 || scores['D1'] === 3;
+    const pct = total / max;
+
+    if (isCritical || pct > 0.65) {
+      level = 'ΚΡΙΣΙΜΟΣ'; levelClass = 'result-critical';
+      title = '🔴 Κρίσιμος Κίνδυνος';
+      desc = 'Το σύστημα παρουσιάζει κρίσιμο επίπεδο κινδύνου. Απαιτείται πλήρης αξιολόγηση πριν από οποιαδήποτε ανάπτυξη. Ενδέχεται να εμπίπτει στα απαγορευμένα ή υψηλού κινδύνου συστήματα του EU AI Act.';
+      reqs = getReqs('critical');
+    } else if (pct > 0.40) {
+      level = 'ΥΨΗΛΟΣ'; levelClass = 'result-high';
+      title = '🟠 Υψηλός Κίνδυνος';
+      desc = 'Το σύστημα παρουσιάζει υψηλό επίπεδο κινδύνου. Απαιτείται εκτενής τεκμηρίωση, DPIA/FRIA και εγκρίσεις πριν από ανάπτυξη.';
+      reqs = getReqs('high');
+    } else if (pct > 0.20) {
+      level = 'ΜΕΤΡΙΟΣ'; levelClass = 'result-medium';
+      title = '🟡 Μέτριος Κίνδυνος';
+      desc = 'Το σύστημα παρουσιάζει μέτριο επίπεδο κινδύνου. Απαιτείται τεκμηρίωση κινδύνων και μέτρα παρακολούθησης, αλλά δεν χρειάζεται πλήρης αξιολόγηση.';
+      reqs = getReqs('medium');
+    } else {
+      level = 'ΧΑΜΗΛΟΣ'; levelClass = 'result-low';
+      title = '🟢 Χαμηλός Κίνδυνος';
+      desc = 'Το σύστημα παρουσιάζει χαμηλό επίπεδο κινδύνου. Απαιτείται βασική καταγραφή και αιτιολόγηση της κατηγοριοποίησης. Δεν απαιτείται εκτενής τεκμηρίωση (βάσει OECD Step 2.1).';
+      reqs = getReqs('low');
+    }
+
+    // Show result
+    document.getElementById('questionnaire').style.display = 'none';
+    const resultEl = document.getElementById('result');
+    resultEl.style.display = 'block';
+
+    const card = document.getElementById('resultCard');
+    card.className = 'result-card ' + levelClass;
+    document.getElementById('resultLabel').textContent = `ΕΠΙΠΕΔΟ ΚΙΝΔΥΝΟΥ · ΒΑΘΜΟΙ: ${total}/${max}`;
+    document.getElementById('resultTitle').textContent = title;
+    document.getElementById('resultScore').textContent = `Συνολική Βαθμολογία: ${total} / ${max} (${Math.round(pct*100)}%)`;
+    document.getElementById('resultDesc').textContent = desc;
+
+    // Requirements
+    document.getElementById('reqList').innerHTML = reqs.map(r =>
+      `<div class="req-item"><span class="req-icon">${r.icon}</span><div class="req-text"><strong>${r.title}</strong><span>${r.desc}</span></div></div>`
+    ).join('');
+
+    // Breakdown
+    const sections = [
+      { label: 'Φύση & Σκοπός', score: sA, max: 9 },
+      { label: 'Δεδομένα & Ιδιωτικότητα', score: sB, max: 6 },
+      { label: 'Σοβαρότητα Βλάβης', score: sC, max: 9 },
+      { label: 'Διαφάνεια & Εποπτεία', score: sD, max: 6 },
+    ];
+
+    document.getElementById('breakdownItems').innerHTML = sections.map(s => {
+      const p = s.max > 0 ? (s.score / s.max) * 100 : 0;
+      const color = p < 25 ? 'var(--green)' : p < 50 ? 'var(--yellow)' : p < 75 ? 'var(--orange)' : 'var(--red)';
+      return `<div class="breakdown-item">
+        <span class="breakdown-label">${s.label}</span>
+        <div class="breakdown-bar-track">
+          <div class="breakdown-bar-fill" style="width:${p}%; background:${color}"></div>
+        </div>
+        <span class="breakdown-val">${s.score}/${s.max}</span>
+      </div>`;
+    }).join('');
+
+    resultEl.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function getReqs(level) {
+    const base = [
+      { icon: '📋', title: 'Βασική Καταχώρηση Μητρώου', desc: 'Όνομα συστήματος, φορέας, σκοπός, φάση κύκλου ζωής, υπεύθυνος.' },
+      { icon: '⚖️', title: 'Αιτιολόγηση Κατηγοριοποίησης', desc: 'Τεκμηρίωση γιατί το σύστημα κατατάσσεται σε αυτό το επίπεδο κινδύνου.' },
+    ];
+    const medium = [
+      ...base,
+      { icon: '🔍', title: 'Αξιολόγηση Κινδύνων (Step 2)', desc: 'Κατάλογος εντοπισμένων κινδύνων με βαθμολόγηση κλίμακας, εύρους, αναστρεψιμότητας.' },
+      { icon: '🛡️', title: 'Μέτρα Μετριασμού (Step 3)', desc: 'Περιγραφή τεχνικών και οργανωτικών μέτρων που εφαρμόζονται.' },
+      { icon: '👁️', title: 'Παρακολούθηση (Step 4)', desc: 'Μετρήσεις απόδοσης και περιοδικοί έλεγχοι.' },
+    ];
+    const high = [
+      ...medium,
+      { icon: '📊', title: 'DPIA (GDPR)', desc: 'Εκτίμηση Αντικτύπου Προστασίας Δεδομένων — απαιτείται από τον ΓΚΠΔ.' },
+      { icon: '🏛️', title: 'FRIA (EU AI Act)', desc: 'Εκτίμηση Αντικτύπου Θεμελιωδών Δικαιωμάτων — απαιτείται για δημόσιους φορείς.' },
+      { icon: '👥', title: 'Διαβούλευση Ενδιαφερόμενων', desc: 'Τεκμηριωμένη εμπλοκή πολιτών/εργαζομένων στη σχεδίαση (Step 1.2 & 2.2).' },
+      { icon: '📢', title: 'Δημόσια Επικοινωνία (Step 5)', desc: 'Δημοσίευση πληροφοριών για λειτουργία, κινδύνους, περιορισμούς.' },
+      { icon: '⚕️', title: 'Μηχανισμός Αποκατάστασης (Step 6)', desc: 'Σαφής διαδικασία ένστασης/προσφυγής για θιγόμενους πολίτες.' },
+    ];
+    const critical = [
+      ...high,
+      { icon: '🚨', title: 'Έγκριση Προϊσταμένης Αρχής', desc: 'Απαιτείται έγκριση από αρμόδια εποπτική αρχή πριν ανάπτυξη.' },
+      { icon: '🔬', title: 'Ανεξάρτητος Έλεγχος', desc: 'Εξωτερικός έλεγχος από ανεξάρτητο φορέα (algorithmic audit).' },
+      { icon: '⏸️', title: 'Σχέδιο Αναστολής', desc: 'Τεκμηριωμένο σχέδιο έκτακτης αναστολής λειτουργίας (Box 2.13).' },
+    ];
+    const map = { low: base, medium, high, critical };
+    return map[level];
+  }
+
+  function resetTool() {
+    Object.keys(scores).forEach(k => delete scores[k]);
+    answeredCount = 0;
+    updateProgress();
+    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    document.querySelectorAll('.section').forEach(s => {
+      s.classList.remove('active', 'completed');
+    });
+    document.getElementById('sec-A').classList.add('active');
+    document.querySelectorAll('.section-score').forEach(s => s.textContent = '—');
+    document.getElementById('questionnaire').style.display = 'block';
+    document.getElementById('result').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
