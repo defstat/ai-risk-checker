@@ -4,7 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Εργαλείο Κατηγοριοποίησης Κινδύνου ΤΝ</title>
+
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Greek:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<link rel="icon" href="./assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="./assets/favicon-32.png" sizes="32x32">
+
+<!-- One-click PDF export (client-side) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <style>
   :root {
     --bg: #0d1117;
@@ -98,7 +106,7 @@
     border-left: 3px solid var(--accent);
     border-radius: 8px;
     padding: 20px 24px;
-    margin-bottom: 32px;
+    margin-bottom: 20px;
     font-size: 14px;
     color: var(--text-muted);
     line-height: 1.7;
@@ -111,7 +119,7 @@
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 16px 24px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     display: flex;
     align-items: center;
     gap: 16px;
@@ -227,14 +235,6 @@
     font-weight: 500;
     color: var(--text);
     margin-bottom: 10px;
-  }
-
-  .question .hint {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: -6px;
-    margin-bottom: 10px;
-    font-style: italic;
   }
 
   .options {
@@ -452,7 +452,6 @@
   }
 
   .breakdown h3 {
-    font-size: 14px;
     font-weight: 600;
     margin-bottom: 16px;
     color: var(--text-muted);
@@ -489,16 +488,11 @@
     transition: width 0.8s ease;
   }
 
-  .fill-0 { background: var(--green); width: 0%; }
-  .fill-33 { background: var(--yellow); }
-  .fill-67 { background: var(--orange); }
-  .fill-100 { background: var(--red); }
-
   .breakdown-val {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
     color: var(--text-muted);
-    width: 40px;
+    width: 50px;
     text-align: right;
   }
 
@@ -536,39 +530,123 @@
     .breakdown-label { width: 140px; font-size: 12px; }
   }
 
-  .option{
-    display:flex;
-    align-items:center;
-    gap:12px;
+  /* Metadata form */
+  .meta {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 24px;
+    margin-bottom: 20px;
   }
-
-  .option input[type="radio"]{
-    position:absolute;
-    opacity:0;
-    pointer-events:none;
+  .meta h2{
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text);
   }
-
-  .question label.option {
-    display: flex;
-    align-items: center;
+  .meta p{
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+  .meta-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
+  }
+  .field label{
+    display:block;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .field input, .field select, .field textarea{
+    width:100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    outline: none;
+    font-family: 'IBM Plex Sans Greek', sans-serif;
+    font-size: 13px;
+  }
+  .field textarea{ min-height: 84px; resize: vertical; }
+  .meta-grid .span-2{ grid-column: span 2; }
+
+  /* Print to PDF styling */
+  @media print {
+    header, .intro, .progress-bar, #questionnaire, footer, .actions { display: none !important; }
+    #result { display: block !important; }
+    body { background: white !important; color: black !important; }
+    .result-card, .breakdown, .requirements { background: white !important; border-color: #bbb !important; }
+    .result-title { color: black !important; }
+    .breakdown-label, .breakdown-val, .result-score, .result-label { color: #333 !important; }
+  }
+
+  .logo-img{
+    height: 44px;
+    width: auto;
+    display: block;
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">ΤΝ</div>
+  <img class="logo-img" src="./assets/logo-egtnai.png" alt="Ειδική Γραμματεία Τεχνητής Νοημοσύνης και Διακυβέρνησης Δεδομένων">
   <div>
     <h1>Εργαλείο Κατηγοριοποίησης Κινδύνου ΤΝ</h1>
     <p>Ελληνικό Δημόσιο · Βάσει OECD Due Diligence Guidance for Responsible AI (2026)</p>
   </div>
-  <span class="badge">v1.0</span>
+  <span class="badge">standalone v1.0</span>
 </header>
 
 <main>
   <div class="intro">
-    Συμπληρώστε τις παρακάτω ενότητες για κάθε σύστημα ΤΝ που εξετάζετε. Το εργαλείο υπολογίζει το <strong>επίπεδο κινδύνου</strong> και τις <strong>απαιτήσεις καταγραφής</strong> βάσει του OECD RBC Due Diligence Framework. Βασισμένο στις αρχές <strong>αναλογικότητας</strong> - τα low-risk συστήματα δεν απαιτούν πλήρη τεκμηρίωση.
+    Συμπληρώστε τις παρακάτω ενότητες για κάθε σύστημα ΤΝ που εξετάζετε. Το εργαλείο υπολογίζει το <strong>επίπεδο κινδύνου</strong> και εξάγει <strong>Report (PDF/JSON)</strong> για καταχώρηση στο Μητρώο.
+  </div>
+
+  <!-- System metadata -->
+  <div class="meta" id="metaBlock">
+    <h2>Στοιχεία Συστήματος (Μητρώο)</h2>
+    <p>Τα πεδία αυτά μπαίνουν στο report και στο JSON εξαγωγής.</p>
+    <div class="meta-grid">
+      <div class="field">
+        <label for="systemName">Όνομα συστήματος</label>
+        <input id="systemName" type="text" placeholder="π.χ. Chatbot Πληροφόρησης Πολιτών">
+      </div>
+      <div class="field">
+        <label for="organization">Φορέας</label>
+        <input id="organization" type="text" placeholder="π.χ. Υπουργείο ...">
+      </div>
+      <div class="field">
+        <label for="ownerUnit">Υπεύθυνη μονάδα</label>
+        <input id="ownerUnit" type="text" placeholder="π.χ. Δ/νση Ψηφιακών Υπηρεσιών">
+      </div>
+      <div class="field">
+        <label for="contactPerson">Σημείο επαφής</label>
+        <input id="contactPerson" type="text" placeholder="Ονοματεπώνυμο / email">
+      </div>
+      <div class="field">
+        <label for="deploymentStatus">Κατάσταση</label>
+        <select id="deploymentStatus">
+          <option value="">Επιλέξτε</option>
+          <option value="pilot">Pilot</option>
+          <option value="production">Production</option>
+          <option value="procurement">Υπό προμήθεια</option>
+          <option value="paused">Σε αναστολή</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="assessmentId">Κωδικός αξιολόγησης</label>
+        <input id="assessmentId" type="text" placeholder="π.χ. AI-REG-2026-0001">
+      </div>
+      <div class="field span-2">
+        <label for="systemDesc">Σύντομη περιγραφή / σκοπός</label>
+        <textarea id="systemDesc" placeholder="Τι κάνει το σύστημα και γιατί χρησιμοποιείται."></textarea>
+      </div>
+    </div>
   </div>
 
   <div class="progress-bar">
@@ -620,7 +698,6 @@
 
         <div class="question">
           <label>Α2. Σε ποιον τομέα εφαρμόζεται;</label>
-          <!-- <div class="hint">Box 2.1 του OECD Guidance</div> -->
           <div class="options" id="q-A2">
             <label class="option" onclick="selectOption('A2', 0, this)">
               <input type="radio" name="A2"><div class="radio-dot"></div>
@@ -647,7 +724,6 @@
 
         <div class="question">
           <label>Α3. Πόσοι πολίτες επηρεάζονται;</label>
-          <!-- <div class="hint">Εύρος επίπτωσης - Scope (Πίνακας 2.3)</div> -->
           <div class="options" id="q-A3">
             <label class="option" onclick="selectOption('A3', 0, this)">
               <input type="radio" name="A3"><div class="radio-dot"></div>
@@ -692,7 +768,6 @@
 
         <div class="question">
           <label>Β1. Ποια κατηγορία δεδομένων επεξεργάζεται;</label>
-          <!-- <div class="hint">Κίνδυνοι ιδιωτικότητας & διακυβέρνησης δεδομένων</div> -->
           <div class="options" id="q-B1">
             <label class="option" onclick="selectOption('B1', 0, this)">
               <input type="radio" name="B1"><div class="radio-dot"></div>
@@ -759,7 +834,6 @@
 
         <div class="question">
           <label>Γ1. Ποια η σοβαρότητα πιθανής βλάβης σε πολίτη;</label>
-          <!-- <div class="hint">Κλίμακα επίπτωσης - Scale (Πίνακας 2.3)</div> -->
           <div class="options" id="q-C1">
             <label class="option" onclick="selectOption('C1', 0, this)">
               <input type="radio" name="C1"><div class="radio-dot"></div>
@@ -786,7 +860,6 @@
 
         <div class="question">
           <label>Γ2. Είναι αναστρέψιμη η πιθανή βλάβη;</label>
-          <!-- <div class="hint">Αναστρεψιμότητα - Irremediability (Πίνακας 2.3)</div> -->
           <div class="options" id="q-C2">
             <label class="option" onclick="selectOption('C2', 0, this)">
               <input type="radio" name="C2"><div class="radio-dot"></div>
@@ -813,7 +886,6 @@
 
         <div class="question">
           <label>Γ3. Πόσο πιθανή είναι μια αρνητική επίπτωση;</label>
-          <!-- <div class="hint">Πιθανότητα - Likelihood (Πίνακας 2.3)</div> -->
           <div class="options" id="q-C3">
             <label class="option" onclick="selectOption('C3', 0, this)">
               <input type="radio" name="C3"><div class="radio-dot"></div>
@@ -885,7 +957,6 @@
 
         <div class="question">
           <label>Δ2. Μπορεί ο πολίτης να αμφισβητήσει/προσφύγει κατά απόφασης;</label>
-          <!-- <div class="hint">Step 6 – Remediation & grievance mechanisms (ένσταση/παράπονα/διόρθωση)</div> -->
           <div class="options" id="q-D2">
             <label class="option" onclick="selectOption('D2', 0, this)">
               <input type="radio" name="D2"><div class="radio-dot"></div>
@@ -935,7 +1006,9 @@
     </div>
 
     <div class="actions">
-      <button class="btn btn-calculate" onclick="window.print()">🖨️ Εκτύπωση</button>
+      <button class="btn btn-calculate" onclick="downloadPDFReport()">⬇️ PDF</button>
+      <button class="btn btn-secondary" onclick="downloadJSONReport()">⬇️ JSON για Μητρώο</button>
+      <button class="btn btn-secondary" onclick="window.print()">🖨️ Εκτύπωση</button>
       <button class="btn btn-reset" onclick="resetTool()">↺ Νέα Αξιολόγηση</button>
     </div>
 
@@ -944,22 +1017,30 @@
 </main>
 
 <footer>
-  Βάσει: <a href="https://doi.org/10.1787/41671712-en" target="_blank">OECD Due Diligence Guidance for Responsible AI (2026)</a> ·
+  Βάσει: <a href="https://doi.org/10.1787/41671712-en" target="_blank" rel="noreferrer">OECD Due Diligence Guidance for Responsible AI (2026)</a> ·
   Συμπληρωματικό προς EU AI Act &amp; GDPR/DPIA ·
   Το εργαλείο αυτό δεν υποκαθιστά νομική συμβουλή
 </footer>
 
 <script>
+  // -----------------------
+  // State
+  // -----------------------
   const scores = {};
   let answeredCount = 0;
   const totalQuestions = 10;
 
+  // -----------------------
+  // UI helpers
+  // -----------------------
   function selectOption(qId, score, el) {
     const group = document.querySelectorAll(`[name="${qId}"]`);
     group.forEach(r => r.closest('.option').classList.remove('selected'));
     el.classList.add('selected');
+
     const prev = scores[qId] !== undefined;
     scores[qId] = score;
+
     if (!prev) {
       answeredCount++;
       updateProgress();
@@ -989,18 +1070,17 @@
         answered++;
       }
     });
+
     const el = document.getElementById(`score-${sec}`);
-    if (answered > 0) {
-      el.textContent = `${total} βαθμοί`;
-    }
+    if (answered > 0) el.textContent = `${total} βαθμοί`;
+
     if (answered === qs.length) {
       document.getElementById(`sec-${sec}`).classList.add('completed');
     }
   }
 
   function toggleSection(sec) {
-    const el = document.getElementById(`sec-${sec}`);
-    el.classList.toggle('active');
+    document.getElementById(`sec-${sec}`).classList.toggle('active');
   }
 
   function nextSection(current, next) {
@@ -1015,172 +1095,173 @@
     document.getElementById(`sec-${prev}`).classList.add('active');
   }
 
-  // function calculateRisk() {
-  //   // Calculate total
-  //   let total = 0;
-  //   Object.values(scores).forEach(s => total += s);
-  //   const max = 36;
-
-  //   // Section totals
-  //   const sA = (scores['A1']||0) + (scores['A2']||0) + (scores['A3']||0);
-  //   const sB = (scores['B1']||0) + (scores['B2']||0);
-  //   const sC = (scores['C1']||0) + (scores['C2']||0) + (scores['C3']||0);
-  //   const sD = (scores['D1']||0) + (scores['D2']||0);
-
-  //   // Determine level
-  //   let level, levelClass, title, desc, reqs;
-
-  //   // Also check for automatic critical flags
-  //   const isCritical = scores['A2'] === 3 || scores['C1'] === 3 || scores['D1'] === 3;
-  //   const pct = total / max;
-
-  //   if (isCritical || pct > 0.65) {
-  //     level = 'ΚΡΙΣΙΜΟΣ'; levelClass = 'result-critical';
-  //     title = '🔴 Κρίσιμος Κίνδυνος';
-  //     desc = 'Το σύστημα παρουσιάζει κρίσιμο επίπεδο κινδύνου. Απαιτείται πλήρης αξιολόγηση πριν από οποιαδήποτε ανάπτυξη. Ενδέχεται να εμπίπτει στα απαγορευμένα ή υψηλού κινδύνου συστήματα του EU AI Act.';
-  //     reqs = getReqs('critical');
-  //   } else if (pct > 0.40) {
-  //     level = 'ΥΨΗΛΟΣ'; levelClass = 'result-high';
-  //     title = '🟠 Υψηλός Κίνδυνος';
-  //     desc = 'Το σύστημα παρουσιάζει υψηλό επίπεδο κινδύνου. Απαιτείται εκτενής τεκμηρίωση, DPIA/FRIA και εγκρίσεις πριν από ανάπτυξη.';
-  //     reqs = getReqs('high');
-  //   } else if (pct > 0.20) {
-  //     level = 'ΜΕΤΡΙΟΣ'; levelClass = 'result-medium';
-  //     title = '🟡 Μέτριος Κίνδυνος';
-  //     desc = 'Το σύστημα παρουσιάζει μέτριο επίπεδο κινδύνου. Απαιτείται τεκμηρίωση κινδύνων και μέτρα παρακολούθησης, αλλά δεν χρειάζεται πλήρης αξιολόγηση.';
-  //     reqs = getReqs('medium');
-  //   } else {
-  //     level = 'ΧΑΜΗΛΟΣ'; levelClass = 'result-low';
-  //     title = '🟢 Χαμηλός Κίνδυνος';
-  //     desc = 'Το σύστημα παρουσιάζει χαμηλό επίπεδο κινδύνου. Απαιτείται βασική καταγραφή και αιτιολόγηση της κατηγοριοποίησης. Δεν απαιτείται εκτενής τεκμηρίωση (βάσει OECD Step 2.1).';
-  //     reqs = getReqs('low');
-  //   }
-
-  //   // Show result
-  //   document.getElementById('questionnaire').style.display = 'none';
-  //   const resultEl = document.getElementById('result');
-  //   resultEl.style.display = 'block';
-
-  //   const card = document.getElementById('resultCard');
-  //   card.className = 'result-card ' + levelClass;
-  //   document.getElementById('resultLabel').textContent = `ΕΠΙΠΕΔΟ ΚΙΝΔΥΝΟΥ · ΒΑΘΜΟΙ: ${total}/${max}`;
-  //   document.getElementById('resultTitle').textContent = title;
-  //   document.getElementById('resultScore').textContent = `Συνολική Βαθμολογία: ${total} / ${max} (${Math.round(pct*100)}%)`;
-  //   document.getElementById('resultDesc').textContent = desc;
-
-  //   // Requirements
-  //   document.getElementById('reqList').innerHTML = reqs.map(r =>
-  //     `<div class="req-item"><span class="req-icon">${r.icon}</span><div class="req-text"><strong>${r.title}</strong><span>${r.desc}</span></div></div>`
-  //   ).join('');
-
-  //   // Breakdown
-  //   const sections = [
-  //     { label: 'Φύση & Σκοπός', score: sA, max: 9 },
-  //     { label: 'Δεδομένα & Ιδιωτικότητα', score: sB, max: 6 },
-  //     { label: 'Σοβαρότητα Βλάβης', score: sC, max: 9 },
-  //     { label: 'Διαφάνεια & Εποπτεία', score: sD, max: 6 },
-  //   ];
-
-  //   document.getElementById('breakdownItems').innerHTML = sections.map(s => {
-  //     const p = s.max > 0 ? (s.score / s.max) * 100 : 0;
-  //     const color = p < 25 ? 'var(--green)' : p < 50 ? 'var(--yellow)' : p < 75 ? 'var(--orange)' : 'var(--red)';
-  //     return `<div class="breakdown-item">
-  //       <span class="breakdown-label">${s.label}</span>
-  //       <div class="breakdown-bar-track">
-  //         <div class="breakdown-bar-fill" style="width:${p}%; background:${color}"></div>
-  //       </div>
-  //       <span class="breakdown-val">${s.score}/${s.max}</span>
-  //     </div>`;
-  //   }).join('');
-
-  //   resultEl.scrollIntoView({ behavior: 'smooth' });
-  // }
-  function calculateRisk() {
-    // --- Section totals (ίδια όπως πριν, για breakdown/UI) ---
+  // -----------------------
+  // Report builder
+  // -----------------------
+  function buildReportData() {
+    // Section totals (for breakdown)
     const sA = (scores['A1']||0) + (scores['A2']||0) + (scores['A3']||0); // max 9
     const sB = (scores['B1']||0) + (scores['B2']||0);                    // max 6
     const sC = (scores['C1']||0) + (scores['C2']||0) + (scores['C3']||0); // max 9
     const sD = (scores['D1']||0) + (scores['D2']||0);                    // max 6
 
-    // --- OECD-style: Impact x Likelihood/Governance ---
-    // Impact: Scale + Irremediability + Scope
-    const impact =
-      (scores['C1'] || 0) + // Scale
-      (scores['C2'] || 0) + // Irremediability
-      (scores['A3'] || 0);  // Scope
-
-    // Likelihood/Governance: Likelihood + Human oversight + Data sensitivity
-    const likelihood =
-      (scores['C3'] || 0) + // Likelihood
-      (scores['D1'] || 0) + // Human oversight (αντιστρόφως: όσο λιγότερη, τόσο χειρότερα)
-      (scores['B1'] || 0);  // Data category
-
+    // OECD-style: Impact x Likelihood
+    const impact = (scores['C1']||0) + (scores['C2']||0) + (scores['A3']||0); // 0..9
+    const likelihood = (scores['C3']||0) + (scores['D1']||0) + (scores['B1']||0); // 0..9
     const riskScore = impact * likelihood; // 0..81
-    const maxRisk = 81;
-    const pct = riskScore / maxRisk;
 
-    // --- Automatic critical flags (όπως πριν, αλλά λίγο πιο “λογικά”) ---
-    // (κρατάς αυτά ως “escalation triggers”)
-    const isCritical =
-      scores['A2'] === 3 || // policing/justice/migration/critical infrastructures
-      scores['B1'] === 3 || // biometric/genetic/surveillance-type data
-      scores['C1'] === 3 || // severe harm to rights/health
-      scores['D1'] === 3;   // no human oversight
+    // Escalation flags
+    const flags = [];
+    if (scores['A2'] === 3) flags.push('HIGH_RISK_DOMAIN');
+    if (scores['B1'] === 3) flags.push('BIOMETRIC_OR_SURVEILLANCE_DATA');
+    if (scores['C1'] === 3) flags.push('SEVERE_HARM');
+    if (scores['D1'] === 3) flags.push('NO_HUMAN_OVERSIGHT');
 
-    // --- Determine level (thresholds για 0..81) ---
-    let levelClass, title, desc, reqs;
+    // Risk thresholds (0..81)
+    let riskLevel = 'LOW';
+    if (flags.length || riskScore >= 52) riskLevel = 'CRITICAL';
+    else if (riskScore >= 32) riskLevel = 'HIGH';
+    else if (riskScore >= 12) riskLevel = 'MEDIUM';
 
-    if (isCritical || riskScore >= 52) {           // ~64% του max
+    // Requirements
+    const reqs = getReqs(riskLevel.toLowerCase());
+
+    // Metadata
+    const meta = {
+      systemName: document.getElementById('systemName').value.trim() || null,
+      organization: document.getElementById('organization').value.trim() || null,
+      ownerUnit: document.getElementById('ownerUnit').value.trim() || null,
+      contactPerson: document.getElementById('contactPerson').value.trim() || null,
+      deploymentStatus: document.getElementById('deploymentStatus').value || null,
+      assessmentId: document.getElementById('assessmentId').value.trim() || null,
+      systemDesc: document.getElementById('systemDesc').value.trim() || null,
+    };
+
+    return {
+      meta: {
+        tool: 'AI Risk Categorisation Tool',
+        toolVersion: 'v1.0',
+        framework: 'OECD Due Diligence Guidance for Responsible AI (2026)',
+        createdAt: new Date().toISOString(),
+        ...meta
+      },
+      answers: { ...scores },
+      computed: {
+        sectionScores: { A: sA, B: sB, C: sC, D: sD },
+        impact,
+        likelihood,
+        riskScore,
+        riskLevel,
+        criticalFlags: flags
+      },
+      requirements: reqs
+    };
+  }
+
+  // -----------------------
+  // Exports
+  // -----------------------
+  function downloadJSONReport() {
+    const data = buildReportData();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ai-risk-report_${(data.meta.assessmentId || new Date().toISOString().slice(0,10)).replace(/\s+/g,'_')}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function downloadPDFReport() {
+    // Ensure result is visible for capture
+    const el = document.getElementById('result');
+    const opt = {
+      margin: 10,
+      filename: `ai-risk-report_${new Date().toISOString().slice(0,10)}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(el).save();
+  }
+
+  // -----------------------
+  // Risk calculation + UI render
+  // -----------------------
+  function calculateRisk() {
+    // Validate: all questions answered
+    const required = ['A1','A2','A3','B1','B2','C1','C2','C3','D1','D2'];
+    const missing = required.filter(q => scores[q] === undefined);
+    if (missing.length) {
+      alert('Παρακαλώ απαντήστε όλες τις ερωτήσεις πριν τον υπολογισμό.');
+      return;
+    }
+
+    const data = buildReportData();
+    const { impact, likelihood, riskScore, riskLevel, criticalFlags, sectionScores } = data.computed;
+
+    // UI mapping
+    let levelClass, title, desc;
+
+    if (riskLevel === 'CRITICAL') {
       levelClass = 'result-critical';
       title = '🔴 Κρίσιμος Κίνδυνος';
       desc = 'Το σύστημα παρουσιάζει κρίσιμο επίπεδο κινδύνου. Απαιτείται πλήρης αξιολόγηση πριν από οποιαδήποτε ανάπτυξη. Ενδέχεται να εμπίπτει στα απαγορευμένα ή υψηλού κινδύνου συστήματα του EU AI Act.';
-      reqs = getReqs('critical');
-    } else if (riskScore >= 32) {                  // ~40%
+    } else if (riskLevel === 'HIGH') {
       levelClass = 'result-high';
       title = '🟠 Υψηλός Κίνδυνος';
       desc = 'Το σύστημα παρουσιάζει υψηλό επίπεδο κινδύνου. Απαιτείται εκτενής τεκμηρίωση, DPIA/FRIA και εγκρίσεις πριν από ανάπτυξη.';
-      reqs = getReqs('high');
-    } else if (riskScore >= 12) {                  // ~15%
+    } else if (riskLevel === 'MEDIUM') {
       levelClass = 'result-medium';
       title = '🟡 Μέτριος Κίνδυνος';
       desc = 'Το σύστημα παρουσιάζει μέτριο επίπεδο κινδύνου. Απαιτείται τεκμηρίωση κινδύνων και μέτρα παρακολούθησης, αλλά δεν χρειάζεται πλήρης αξιολόγηση.';
-      reqs = getReqs('medium');
     } else {
       levelClass = 'result-low';
       title = '🟢 Χαμηλός Κίνδυνος';
       desc = 'Το σύστημα παρουσιάζει χαμηλό επίπεδο κινδύνου. Απαιτείται βασική καταγραφή και αιτιολόγηση της κατηγοριοποίησης. Δεν απαιτείται εκτενής τεκμηρίωση.';
-      reqs = getReqs('low');
     }
 
-    // --- Show result (ίδιο UI, αλλά αλλάζουν τα labels σε riskScore) ---
+    // Show result
     document.getElementById('questionnaire').style.display = 'none';
-    const resultEl = document.getElementById('result');
-    resultEl.style.display = 'block';
+    document.getElementById('metaBlock').style.display = 'none';
+    document.getElementById('result').style.display = 'block';
 
     const card = document.getElementById('resultCard');
     card.className = 'result-card ' + levelClass;
 
+    const flagsTxt = criticalFlags.length ? ` · FLAGS: ${criticalFlags.join(', ')}` : '';
     document.getElementById('resultLabel').textContent =
-      `ΕΠΙΠΕΔΟ ΚΙΝΔΥΝΟΥ · RISK SCORE: ${riskScore}/${maxRisk}`;
+      `ΕΠΙΠΕΔΟ ΚΙΝΔΥΝΟΥ · RISK SCORE: ${riskScore}/81${flagsTxt}`;
 
     document.getElementById('resultTitle').textContent = title;
-
     document.getElementById('resultScore').textContent =
-      `Impact: ${impact}/9 · Likelihood: ${likelihood}/9 · Risk: ${riskScore}/${maxRisk} (${Math.round(pct*100)}%)`;
+      `Impact: ${impact}/9 · Likelihood: ${likelihood}/9 · Risk: ${riskScore}/81 (${Math.round((riskScore/81)*100)}%)`;
 
-    document.getElementById('resultDesc').textContent = desc;
+    // Add metadata summary on top of description (short)
+    const m = data.meta;
+    const metaLine = [
+      m.assessmentId ? `ID: ${m.assessmentId}` : null,
+      m.systemName ? `Σύστημα: ${m.systemName}` : null,
+      m.organization ? `Φορέας: ${m.organization}` : null,
+      m.deploymentStatus ? `Κατάσταση: ${m.deploymentStatus}` : null
+    ].filter(Boolean).join(' · ');
+
+    document.getElementById('resultDesc').textContent =
+      (metaLine ? metaLine + '\n\n' : '') + desc;
 
     // Requirements
-    document.getElementById('reqList').innerHTML = reqs.map(r =>
+    document.getElementById('reqList').innerHTML = data.requirements.map(r =>
       `<div class="req-item"><span class="req-icon">${r.icon}</span><div class="req-text"><strong>${r.title}</strong><span>${r.desc}</span></div></div>`
     ).join('');
 
-    // Breakdown (κρατάς το παλιό breakdown ανά ενότητα)
+    // Breakdown
     const sections = [
-      { label: 'Φύση & Σκοπός', score: sA, max: 9 },
-      { label: 'Δεδομένα & Ιδιωτικότητα', score: sB, max: 6 },
-      { label: 'Σοβαρότητα Βλάβης', score: sC, max: 9 },
-      { label: 'Διαφάνεια & Εποπτεία', score: sD, max: 6 },
+      { label: 'Φύση & Σκοπός', score: sectionScores.A, max: 9 },
+      { label: 'Δεδομένα & Ιδιωτικότητα', score: sectionScores.B, max: 6 },
+      { label: 'Σοβαρότητα Βλάβης', score: sectionScores.C, max: 9 },
+      { label: 'Διαφάνεια & Εποπτεία', score: sectionScores.D, max: 6 },
     ];
 
     document.getElementById('breakdownItems').innerHTML = sections.map(s => {
@@ -1195,7 +1276,7 @@
       </div>`;
     }).join('');
 
-    resultEl.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
   }
 
   function getReqs(level) {
@@ -1205,40 +1286,43 @@
     ];
     const medium = [
       ...base,
-      { icon: '🔍', title: 'Αξιολόγηση Κινδύνων (Step 2)', desc: 'Κατάλογος εντοπισμένων κινδύνων με βαθμολόγηση κλίμακας, εύρους, αναστρεψιμότητας.' },
-      { icon: '🛡️', title: 'Μέτρα Μετριασμού (Step 3)', desc: 'Περιγραφή τεχνικών και οργανωτικών μέτρων που εφαρμόζονται.' },
-      { icon: '👁️', title: 'Παρακολούθηση (Step 4)', desc: 'Μετρήσεις απόδοσης και περιοδικοί έλεγχοι.' },
+      { icon: '🔍', title: 'Αξιολόγηση Κινδύνων', desc: 'Κατάλογος εντοπισμένων κινδύνων με κλίμακα, εύρος, αναστρεψιμότητα, πιθανότητα.' },
+      { icon: '🛡️', title: 'Μέτρα Μετριασμού', desc: 'Περιγραφή τεχνικών και οργανωτικών μέτρων.' },
+      { icon: '👁️', title: 'Παρακολούθηση', desc: 'Μετρήσεις απόδοσης και περιοδικοί έλεγχοι.' },
     ];
     const high = [
       ...medium,
-      { icon: '📊', title: 'DPIA (GDPR)', desc: 'Εκτίμηση Αντικτύπου Προστασίας Δεδομένων - απαιτείται από τον ΓΚΠΔ.' },
-      { icon: '🏛️', title: 'FRIA (EU AI Act)', desc: 'Εκτίμηση Αντικτύπου Θεμελιωδών Δικαιωμάτων - απαιτείται για δημόσιους φορείς.' },
-      { icon: '👥', title: 'Διαβούλευση Ενδιαφερόμενων', desc: 'Τεκμηριωμένη εμπλοκή πολιτών/εργαζομένων στη σχεδίαση (Step 1.2 & 2.2).' },
-      { icon: '📢', title: 'Δημόσια Επικοινωνία (Step 5)', desc: 'Δημοσίευση πληροφοριών για λειτουργία, κινδύνους, περιορισμούς.' },
-      { icon: '⚕️', title: 'Μηχανισμός Αποκατάστασης (Step 6)', desc: 'Σαφής διαδικασία ένστασης/προσφυγής για θιγόμενους πολίτες.' },
+      { icon: '📊', title: 'DPIA (GDPR)', desc: 'Εκτίμηση Αντικτύπου Προστασίας Δεδομένων όπου απαιτείται.' },
+      { icon: '🏛️', title: 'FRIA (EU AI Act)', desc: 'Εκτίμηση Αντικτύπου Θεμελιωδών Δικαιωμάτων (ιδίως για δημόσιους φορείς).' },
+      { icon: '👥', title: 'Διαβούλευση Ενδιαφερόμενων', desc: 'Τεκμηριωμένη εμπλοκή θιγόμενων/χρηστών.' },
+      { icon: '📢', title: 'Δημόσια Επικοινωνία', desc: 'Πληροφορίες προς το κοινό για λειτουργία, περιορισμούς, κινδύνους.' },
+      { icon: '⚕️', title: 'Μηχανισμός Αποκατάστασης', desc: 'Σαφής διαδικασία ένστασης/προσφυγής και διόρθωσης.' },
     ];
     const critical = [
       ...high,
-      { icon: '🚨', title: 'Έγκριση Προϊσταμένης Αρχής', desc: 'Απαιτείται έγκριση από αρμόδια εποπτική αρχή πριν ανάπτυξη.' },
-      { icon: '🔬', title: 'Ανεξάρτητος Έλεγχος', desc: 'Εξωτερικός έλεγχος από ανεξάρτητο φορέα (algorithmic audit).' },
-      { icon: '⏸️', title: 'Σχέδιο Αναστολής', desc: 'Τεκμηριωμένο σχέδιο έκτακτης αναστολής λειτουργίας (Box 2.13).' },
+      { icon: '🚨', title: 'Έγκριση αρμόδιας αρχής', desc: 'Εσωτερικές/εξωτερικές εγκρίσεις πριν από ανάπτυξη, όπου απαιτείται.' },
+      { icon: '🔬', title: 'Ανεξάρτητος Έλεγχος', desc: 'Εξωτερικός έλεγχος (audit) για κρίσιμες περιπτώσεις.' },
+      { icon: '⏸️', title: 'Σχέδιο Αναστολής', desc: 'Σχέδιο άμεσης αναστολής/rollback σε περίπτωση σοβαρών περιστατικών.' },
     ];
     const map = { low: base, medium, high, critical };
-    return map[level];
+    return map[level] || base;
   }
 
   function resetTool() {
     Object.keys(scores).forEach(k => delete scores[k]);
     answeredCount = 0;
     updateProgress();
+
     document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
-    document.querySelectorAll('.section').forEach(s => {
-      s.classList.remove('active', 'completed');
-    });
-    document.getElementById('sec-A').classList.add('active');
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active', 'completed'));
     document.querySelectorAll('.section-score').forEach(s => s.textContent = '-');
+
+    document.getElementById('sec-A').classList.add('active');
+
+    document.getElementById('metaBlock').style.display = 'block';
     document.getElementById('questionnaire').style.display = 'block';
     document.getElementById('result').style.display = 'none';
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 </script>
