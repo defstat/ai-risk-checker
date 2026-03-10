@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Risk Categorisation Tool</title>
+
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<link rel="icon" href="./assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="./assets/favicon-32.png" sizes="32x32">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2330;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #7d8590;
+    --accent: #2f81f7;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --orange: #db6d28;
+    --red: #f85149;
+    --low: #1a3a2a;
+    --low-border: #3fb950;
+    --medium: #3a2a0a;
+    --medium-border: #d29922;
+    --high: #3a1a0a;
+    --high-border: #db6d28;
+    --critical: #3a0a0a;
+    --critical-border: #f85149;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo {
+    width: 40px;
+    height: 40px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  header h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  header p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .badge {
+    margin-left: auto;
+    background: #1a2540;
+    border: 1px solid #2f4080;
+    color: #7aa2f7;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  .intro {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .intro strong { color: var(--text); }
+
+  .progress-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .section.active {
+    border-color: var(--accent);
+  }
+
+  .section-header {
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .section-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .section.active .section-num,
+  .section.completed .section-num {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .section.completed .section-num {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .section-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .section-score {
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .section-body {
+    padding: 0 24px 24px;
+    display: none;
+  }
+
+  .section.active .section-body {
+    display: block;
+  }
+
+  .question {
+    margin-bottom: 20px;
+  }
+
+  .question > label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .options {
+    display: grid;
+    gap: 8px;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 13px;
+  }
+
+  .option:hover {
+    border-color: var(--accent);
+    background: #1c2a3a;
+  }
+
+  .option.selected {
+    border-color: var(--accent);
+    background: #1a2540;
+    color: var(--text);
+  }
+
+  .option input[type="radio"] { display: none; }
+
+  .radio-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .option.selected .radio-dot {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .option.selected .radio-dot::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+  }
+
+  .score-tag {
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .score-0 { background: #1a3a2a; color: var(--green); }
+  .score-1 { background: #2a2a1a; color: var(--yellow); }
+  .score-2 { background: #3a2a1a; color: var(--orange); }
+  .score-3 { background: #3a1a1a; color: var(--red); }
+
+  .section-nav {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-primary:hover { background: #388bfd; }
+
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover { border-color: var(--accent); }
+
+  .btn-calculate {
+    background: var(--green);
+    color: #0d1117;
+    font-weight: 600;
+  }
+
+  .btn-calculate:hover { background: #4fc362; }
+
+  #result {
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-card {
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 24px;
+    border: 2px solid;
+  }
+
+  .result-low { background: var(--low); border-color: var(--low-border); }
+  .result-medium { background: var(--medium); border-color: var(--medium-border); }
+  .result-high { background: var(--high); border-color: var(--high-border); }
+  .result-critical { background: var(--critical); border-color: var(--critical-border); }
+
+  .result-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.8;
+  }
+
+  .result-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .result-score {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    opacity: 0.7;
+    margin-bottom: 20px;
+  }
+
+  .result-desc {
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 24px;
+    white-space: pre-line;
+  }
+
+  .requirements {
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .requirements h3 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    opacity: 0.8;
+  }
+
+  .req-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 13px;
+  }
+
+  .req-item:last-child { border-bottom: none; }
+
+  .req-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .req-text strong {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .req-text span {
+    font-size: 12px;
+    opacity: 0.7;
+  }
+
+  .breakdown {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .breakdown h3 {
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 12px;
+  }
+
+  .breakdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .breakdown-label {
+    font-size: 13px;
+    width: 200px;
+    flex-shrink: 0;
+    color: var(--text-muted);
+  }
+
+  .breakdown-bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .breakdown-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.8s ease;
+  }
+
+  .breakdown-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    width: 50px;
+    text-align: right;
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-reset {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-reset:hover {
+    color: var(--text);
+    border-color: var(--text-muted);
+  }
+
+  footer {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--text-muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 600px) {
+    header { padding: 16px 20px; }
+    main { padding: 24px 16px; }
+    .breakdown-label { width: 140px; font-size: 12px; }
+  }
+
+  .meta {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 24px;
+    margin-bottom: 20px;
+  }
+  .meta h2 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+  .meta p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .field label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    outline: none;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+  }
+  .field textarea { min-height: 84px; resize: vertical; }
+  .meta-grid .span-2 { grid-column: span 2; }
+
+  @media print {
+    header, .intro, .progress-bar, #questionnaire, footer, .actions { display: none !important; }
+    #result { display: block !important; }
+    body { background: white !important; color: black !important; }
+    .result-card, .breakdown, .requirements { background: white !important; border-color: #bbb !important; }
+    .result-title { color: black !important; }
+    .breakdown-label, .breakdown-val, .result-score, .result-label { color: #333 !important; }
+  }
+
+  .logo-img {
+    height: 44px;
+    width: auto;
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img class="logo-img" src="./assets/logo-egtnai.png" alt="Special Secretariat for Artificial Intelligence and Data Governance" onerror="this.style.display='none'; document.querySelector('.logo-fallback').style.display='flex'">
+  <div class="logo logo-fallback" style="display:none">AI</div>
+  <div>
+    <h1>AI Risk Categorisation Tool</h1>
+    <p>Greek Public Sector · Based on OECD Due Diligence Guidance for Responsible AI (2026)</p>
+  </div>
+  <span class="badge">standalone v1.0</span>
+</header>
+
+<main>
+  <div class="intro">
+    Complete the sections below for each AI system under review. The tool calculates the <strong>risk level</strong> and generates a <strong>Report (PDF/JSON)</strong> for entry into the Registry.
+  </div>
+
+  <!-- System metadata -->
+  <div class="meta" id="metaBlock">
+    <h2>System Details (Registry)</h2>
+    <p>These fields are included in the report and JSON export.</p>
+    <div class="meta-grid">
+      <div class="field">
+        <label for="systemName">System name</label>
+        <input id="systemName" type="text" placeholder="e.g. Citizen Information Chatbot">
+      </div>
+      <div class="field">
+        <label for="organization">Organisation</label>
+        <input id="organization" type="text" placeholder="e.g. Ministry of ...">
+      </div>
+      <div class="field">
+        <label for="ownerUnit">Responsible unit</label>
+        <input id="ownerUnit" type="text" placeholder="e.g. Digital Services Directorate">
+      </div>
+      <div class="field">
+        <label for="contactPerson">Point of contact</label>
+        <input id="contactPerson" type="text" placeholder="Full name / email">
+      </div>
+      <div class="field">
+        <label for="deploymentStatus">Status</label>
+        <select id="deploymentStatus">
+          <option value="">Select</option>
+          <option value="pilot">Pilot</option>
+          <option value="production">Production</option>
+          <option value="procurement">Under procurement</option>
+          <option value="paused">Suspended</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="assessmentId">Assessment ID</label>
+        <input id="assessmentId" type="text" placeholder="e.g. AI-REG-2026-0001">
+      </div>
+      <div class="field span-2">
+        <label for="systemDesc">Brief description / purpose</label>
+        <textarea id="systemDesc" placeholder="What the system does and why it is used."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <span class="progress-label" id="progressLabel">0 / 10 questions</span>
+  </div>
+
+  <div id="questionnaire">
+
+    <!-- Section A -->
+    <div class="section active" id="sec-A">
+      <div class="section-header" onclick="toggleSection('A')">
+        <div class="section-num">A</div>
+        <div>
+          <div class="section-title">Nature and Purpose of the System</div>
+          <div class="section-subtitle">What the system does and who it affects</div>
+        </div>
+        <div class="section-score" id="score-A">-</div>
+      </div>
+      <div class="section-body">
+
+        <div class="question">
+          <label>A1. Does the system make decisions that affect citizens?</label>
+          <div class="options" id="q-A1">
+            <label class="option" onclick="selectOption('A1', 0, this)">
+              <input type="radio" name="A1"><div class="radio-dot"></div>
+              No — internal tool with no impact on citizens
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('A1', 1, this)">
+              <input type="radio" name="A1"><div class="radio-dot"></div>
+              Indirectly — supports decisions but final judgement rests with a human
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('A1', 2, this)">
+              <input type="radio" name="A1"><div class="radio-dot"></div>
+              Directly — its decisions affect citizens' rights or services
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('A1', 3, this)">
+              <input type="radio" name="A1"><div class="radio-dot"></div>
+              Automatically — makes decisions without human intervention
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <label>A2. In which sector is it deployed?</label>
+          <div class="options" id="q-A2">
+            <label class="option" onclick="selectOption('A2', 0, this)">
+              <input type="radio" name="A2"><div class="radio-dot"></div>
+              Internal administration (e.g. IT, logistics, document management)
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('A2', 1, this)">
+              <input type="radio" name="A2"><div class="radio-dot"></div>
+              General public services (e.g. information, chatbot)
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('A2', 2, this)">
+              <input type="radio" name="A2"><div class="radio-dot"></div>
+              Health, education, social benefits, employment
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('A2', 3, this)">
+              <input type="radio" name="A2"><div class="radio-dot"></div>
+              Security, policing, justice, migration, critical infrastructure
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <label>A3. How many citizens are affected?</label>
+          <div class="options" id="q-A3">
+            <label class="option" onclick="selectOption('A3', 0, this)">
+              <input type="radio" name="A3"><div class="radio-dot"></div>
+              None / internal users only (&lt;50 people)
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('A3', 1, this)">
+              <input type="radio" name="A3"><div class="radio-dot"></div>
+              Limited number (&lt;1,000 people)
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('A3', 2, this)">
+              <input type="radio" name="A3"><div class="radio-dot"></div>
+              Significant number (1,000 – 100,000 people)
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('A3', 3, this)">
+              <input type="radio" name="A3"><div class="radio-dot"></div>
+              Large audience (&gt;100,000 people or national scale)
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="section-nav">
+          <button class="btn btn-primary" onclick="nextSection('A','B')">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section B -->
+    <div class="section" id="sec-B">
+      <div class="section-header" onclick="toggleSection('B')">
+        <div class="section-num">B</div>
+        <div>
+          <div class="section-title">Data and Privacy</div>
+          <div class="section-subtitle">What data the system processes</div>
+        </div>
+        <div class="section-score" id="score-B">-</div>
+      </div>
+      <div class="section-body">
+
+        <div class="question">
+          <label>B1. What category of data does it process?</label>
+          <div class="options" id="q-B1">
+            <label class="option" onclick="selectOption('B1', 0, this)">
+              <input type="radio" name="B1"><div class="radio-dot"></div>
+              Anonymous or aggregate data only
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('B1', 1, this)">
+              <input type="radio" name="B1"><div class="radio-dot"></div>
+              Ordinary personal data
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('B1', 2, this)">
+              <input type="radio" name="B1"><div class="radio-dot"></div>
+              Sensitive personal data (health, financial, religion, etc.)
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('B1', 3, this)">
+              <input type="radio" name="B1"><div class="radio-dot"></div>
+              Biometric, genetic, or surveillance data
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <label>B2. Does it involve vulnerable groups?</label>
+          <div class="options" id="q-B2">
+            <label class="option" onclick="selectOption('B2', 0, this)">
+              <input type="radio" name="B2"><div class="radio-dot"></div>
+              No — general population
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('B2', 1, this)">
+              <input type="radio" name="B2"><div class="radio-dot"></div>
+              Partly — may include vulnerable individuals
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('B2', 3, this)">
+              <input type="radio" name="B2"><div class="radio-dot"></div>
+              Yes — primarily minors, elderly, disabled persons, or refugees
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="section-nav">
+          <button class="btn btn-secondary" onclick="prevSection('B','A')">← Back</button>
+          <button class="btn btn-primary" onclick="nextSection('B','C')">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section C -->
+    <div class="section" id="sec-C">
+      <div class="section-header" onclick="toggleSection('C')">
+        <div class="section-num">C</div>
+        <div>
+          <div class="section-title">Severity of Potential Harm</div>
+          <div class="section-subtitle">What could go wrong and how reversible it is</div>
+        </div>
+        <div class="section-score" id="score-C">-</div>
+      </div>
+      <div class="section-body">
+
+        <div class="question">
+          <label>C1. What is the severity of potential harm to a citizen?</label>
+          <div class="options" id="q-C1">
+            <label class="option" onclick="selectOption('C1', 0, this)">
+              <input type="radio" name="C1"><div class="radio-dot"></div>
+              Negligible — no meaningful impact
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('C1', 1, this)">
+              <input type="radio" name="C1"><div class="radio-dot"></div>
+              Minor — slight inconvenience or delay
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('C1', 2, this)">
+              <input type="radio" name="C1"><div class="radio-dot"></div>
+              Significant — financial loss or denial of a service
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('C1', 3, this)">
+              <input type="radio" name="C1"><div class="radio-dot"></div>
+              Serious — violation of fundamental rights, physical or psychological harm
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <label>C2. Is the potential harm reversible?</label>
+          <div class="options" id="q-C2">
+            <label class="option" onclick="selectOption('C2', 0, this)">
+              <input type="radio" name="C2"><div class="radio-dot"></div>
+              Fully reversible — easily remedied
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('C2', 1, this)">
+              <input type="radio" name="C2"><div class="radio-dot"></div>
+              Partially reversible — can be remedied with effort
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('C2', 2, this)">
+              <input type="radio" name="C2"><div class="radio-dot"></div>
+              Difficult to reverse — lengthy remediation process
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('C2', 3, this)">
+              <input type="radio" name="C2"><div class="radio-dot"></div>
+              Irreversible — permanent harm
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <label>C3. How likely is a negative outcome?</label>
+          <div class="options" id="q-C3">
+            <label class="option" onclick="selectOption('C3', 0, this)">
+              <input type="radio" name="C3"><div class="radio-dot"></div>
+              Unlikely — no similar incidents have been reported
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('C3', 1, this)">
+              <input type="radio" name="C3"><div class="radio-dot"></div>
+              Possible in extreme scenarios
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('C3', 2, this)">
+              <input type="radio" name="C3"><div class="radio-dot"></div>
+              Fairly likely — similar incidents have occurred elsewhere
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('C3', 3, this)">
+              <input type="radio" name="C3"><div class="radio-dot"></div>
+              Highly likely — known risk for this category of system
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="section-nav">
+          <button class="btn btn-secondary" onclick="prevSection('C','B')">← Back</button>
+          <button class="btn btn-primary" onclick="nextSection('C','D')">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section D -->
+    <div class="section" id="sec-D">
+      <div class="section-header" onclick="toggleSection('D')">
+        <div class="section-num">D</div>
+        <div>
+          <div class="section-title">Transparency and Oversight</div>
+          <div class="section-subtitle">Control and accountability of the system</div>
+        </div>
+        <div class="section-score" id="score-D">-</div>
+      </div>
+      <div class="section-body">
+
+        <div class="question">
+          <label>D1. Is there human oversight of decisions?</label>
+          <div class="options" id="q-D1">
+            <label class="option" onclick="selectOption('D1', 0, this)">
+              <input type="radio" name="D1"><div class="radio-dot"></div>
+              Full — a human takes every final decision
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('D1', 1, this)">
+              <input type="radio" name="D1"><div class="radio-dot"></div>
+              Partial — periodic human review
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('D1', 2, this)">
+              <input type="radio" name="D1"><div class="radio-dot"></div>
+              Minimal — only upon appeal or complaint
+              <span class="score-tag score-2">+2</span>
+            </label>
+            <label class="option" onclick="selectOption('D1', 3, this)">
+              <input type="radio" name="D1"><div class="radio-dot"></div>
+              None — fully automated
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <label>D2. Can a citizen challenge or appeal a decision?</label>
+          <div class="options" id="q-D2">
+            <label class="option" onclick="selectOption('D2', 0, this)">
+              <input type="radio" name="D2"><div class="radio-dot"></div>
+              Yes — a clear appeal/redress procedure exists
+              <span class="score-tag score-0">+0</span>
+            </label>
+            <label class="option" onclick="selectOption('D2', 1, this)">
+              <input type="radio" name="D2"><div class="radio-dot"></div>
+              Partially — possible but not transparent
+              <span class="score-tag score-1">+1</span>
+            </label>
+            <label class="option" onclick="selectOption('D2', 3, this)">
+              <input type="radio" name="D2"><div class="radio-dot"></div>
+              No — no appeal mechanism exists
+              <span class="score-tag score-3">+3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="section-nav">
+          <button class="btn btn-secondary" onclick="prevSection('D','C')">← Back</button>
+          <button class="btn btn-calculate" onclick="calculateRisk()">⚡ Calculate Risk</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end questionnaire -->
+
+  <!-- Result -->
+  <div id="result">
+
+    <div class="result-card" id="resultCard">
+      <div class="result-label" id="resultLabel">RISK LEVEL</div>
+      <div class="result-title" id="resultTitle">-</div>
+      <div class="result-score" id="resultScore">-</div>
+      <div class="result-desc" id="resultDesc">-</div>
+
+      <div class="requirements">
+        <h3>Registry Documentation Requirements</h3>
+        <div id="reqList"></div>
+      </div>
+    </div>
+
+    <div class="breakdown">
+      <h3>Score Breakdown by Section</h3>
+      <div id="breakdownItems"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-calculate" onclick="downloadJSONReport()">⬇️ JSON for Registry</button>
+      <button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>
+      <button class="btn btn-reset" onclick="resetTool()">↺ New Assessment</button>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  Based on: <a href="https://doi.org/10.1787/41671712-en" target="_blank" rel="noreferrer">OECD Due Diligence Guidance for Responsible AI (2026)</a> ·
+  Supplementary to EU AI Act &amp; GDPR/DPIA ·
+  This tool does not constitute legal advice
+</footer>
+
+<script>
+  // -----------------------
+  // State
+  // -----------------------
+  const scores = {};
+  let answeredCount = 0;
+  const totalQuestions = 10;
+
+  // -----------------------
+  // UI helpers
+  // -----------------------
+  function selectOption(qId, score, el) {
+    const group = document.querySelectorAll(`[name="${qId}"]`);
+    group.forEach(r => r.closest('.option').classList.remove('selected'));
+    el.classList.add('selected');
+
+    const prev = scores[qId] !== undefined;
+    scores[qId] = score;
+
+    if (!prev) {
+      answeredCount++;
+      updateProgress();
+    }
+    updateSectionScore(qId[0]);
+  }
+
+  function updateProgress() {
+    const pct = Math.round((answeredCount / totalQuestions) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = `${answeredCount} / ${totalQuestions} questions`;
+  }
+
+  function updateSectionScore(sec) {
+    const map = {
+      'A': ['A1','A2','A3'],
+      'B': ['B1','B2'],
+      'C': ['C1','C2','C3'],
+      'D': ['D1','D2']
+    };
+    const qs = map[sec];
+    let total = 0;
+    let answered = 0;
+    qs.forEach(q => {
+      if (scores[q] !== undefined) {
+        total += scores[q];
+        answered++;
+      }
+    });
+
+    const el = document.getElementById(`score-${sec}`);
+    if (answered > 0) el.textContent = `${total} pts`;
+
+    if (answered === qs.length) {
+      document.getElementById(`sec-${sec}`).classList.add('completed');
+    }
+  }
+
+  function toggleSection(sec) {
+    document.getElementById(`sec-${sec}`).classList.toggle('active');
+  }
+
+  function nextSection(current, next) {
+    document.getElementById(`sec-${current}`).classList.remove('active');
+    const nextEl = document.getElementById(`sec-${next}`);
+    nextEl.classList.add('active');
+    nextEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function prevSection(current, prev) {
+    document.getElementById(`sec-${current}`).classList.remove('active');
+    document.getElementById(`sec-${prev}`).classList.add('active');
+  }
+
+  // -----------------------
+  // Report builder
+  // -----------------------
+  function buildReportData() {
+    const sA = (scores['A1']||0) + (scores['A2']||0) + (scores['A3']||0);
+    const sB = (scores['B1']||0) + (scores['B2']||0);
+    const sC = (scores['C1']||0) + (scores['C2']||0) + (scores['C3']||0);
+    const sD = (scores['D1']||0) + (scores['D2']||0);
+
+    const impact = (scores['C1']||0) + (scores['C2']||0) + (scores['A3']||0);
+    const likelihood = (scores['C3']||0) + (scores['D1']||0) + (scores['B1']||0);
+    const riskScore = impact * likelihood;
+
+    const flags = [];
+    if (scores['A2'] === 3) flags.push('HIGH_RISK_DOMAIN');
+    if (scores['B1'] === 3) flags.push('BIOMETRIC_OR_SURVEILLANCE_DATA');
+    if (scores['C1'] === 3) flags.push('SEVERE_HARM');
+    if (scores['D1'] === 3) flags.push('NO_HUMAN_OVERSIGHT');
+
+    let riskLevel = 'LOW';
+    if (flags.length || riskScore >= 52) riskLevel = 'CRITICAL';
+    else if (riskScore >= 32) riskLevel = 'HIGH';
+    else if (riskScore >= 12) riskLevel = 'MEDIUM';
+
+    const reqs = getReqs(riskLevel.toLowerCase());
+
+    const meta = {
+      systemName: document.getElementById('systemName').value.trim() || null,
+      organization: document.getElementById('organization').value.trim() || null,
+      ownerUnit: document.getElementById('ownerUnit').value.trim() || null,
+      contactPerson: document.getElementById('contactPerson').value.trim() || null,
+      deploymentStatus: document.getElementById('deploymentStatus').value || null,
+      assessmentId: document.getElementById('assessmentId').value.trim() || null,
+      systemDesc: document.getElementById('systemDesc').value.trim() || null,
+    };
+
+    return {
+      meta: {
+        tool: 'AI Risk Categorisation Tool',
+        toolVersion: 'v1.0',
+        framework: 'OECD Due Diligence Guidance for Responsible AI (2026)',
+        createdAt: new Date().toISOString(),
+        ...meta
+      },
+      answers: { ...scores },
+      computed: {
+        sectionScores: { A: sA, B: sB, C: sC, D: sD },
+        impact,
+        likelihood,
+        riskScore,
+        riskLevel,
+        criticalFlags: flags
+      },
+      requirements: reqs
+    };
+  }
+
+  // -----------------------
+  // Exports
+  // -----------------------
+  function downloadJSONReport() {
+    const data = buildReportData();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ai-risk-report_${(data.meta.assessmentId || new Date().toISOString().slice(0,10)).replace(/\s+/g,'_')}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  // -----------------------
+  // Risk calculation + UI render
+  // -----------------------
+  function calculateRisk() {
+    const required = ['A1','A2','A3','B1','B2','C1','C2','C3','D1','D2'];
+    const missing = required.filter(q => scores[q] === undefined);
+    if (missing.length) {
+      alert('Please answer all questions before calculating the risk score.');
+      return;
+    }
+
+    const data = buildReportData();
+    const { impact, likelihood, riskScore, riskLevel, criticalFlags, sectionScores } = data.computed;
+
+    let levelClass, title, desc;
+
+    if (riskLevel === 'CRITICAL') {
+      levelClass = 'result-critical';
+      title = '🔴 Critical Risk';
+      desc = 'The system presents a critical level of risk. A full assessment is required before any deployment. It may fall under the prohibited or high-risk categories of the EU AI Act.';
+    } else if (riskLevel === 'HIGH') {
+      levelClass = 'result-high';
+      title = '🟠 High Risk';
+      desc = 'The system presents a high level of risk. Extensive documentation, DPIA/FRIA, and approvals are required before deployment.';
+    } else if (riskLevel === 'MEDIUM') {
+      levelClass = 'result-medium';
+      title = '🟡 Medium Risk';
+      desc = 'The system presents a medium level of risk. Risk documentation and monitoring measures are required, but a full assessment is not necessary.';
+    } else {
+      levelClass = 'result-low';
+      title = '🟢 Low Risk';
+      desc = 'The system presents a low level of risk. Basic registration and justification of the categorisation are required. Extensive documentation is not necessary.';
+    }
+
+    document.getElementById('questionnaire').style.display = 'none';
+    document.getElementById('metaBlock').style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+
+    const card = document.getElementById('resultCard');
+    card.className = 'result-card ' + levelClass;
+
+    const flagsTxt = criticalFlags.length ? ` · FLAGS: ${criticalFlags.join(', ')}` : '';
+    document.getElementById('resultLabel').textContent =
+      `RISK LEVEL · RISK SCORE: ${riskScore}/81${flagsTxt}`;
+
+    document.getElementById('resultTitle').textContent = title;
+    document.getElementById('resultScore').textContent =
+      `Impact: ${impact}/9 · Likelihood: ${likelihood}/9 · Risk: ${riskScore}/81 (${Math.round((riskScore/81)*100)}%)`;
+
+    const m = data.meta;
+    const metaLine = [
+      m.assessmentId ? `ID: ${m.assessmentId}` : null,
+      m.systemName ? `System: ${m.systemName}` : null,
+      m.organization ? `Organisation: ${m.organization}` : null,
+      m.deploymentStatus ? `Status: ${m.deploymentStatus}` : null
+    ].filter(Boolean).join(' · ');
+
+    document.getElementById('resultDesc').textContent =
+      (metaLine ? metaLine + '\n\n' : '') + desc;
+
+    document.getElementById('reqList').innerHTML = data.requirements.map(r =>
+      `<div class="req-item"><span class="req-icon">${r.icon}</span><div class="req-text"><strong>${r.title}</strong><span>${r.desc}</span></div></div>`
+    ).join('');
+
+    const sections = [
+      { label: 'Nature & Purpose', score: sectionScores.A, max: 9 },
+      { label: 'Data & Privacy', score: sectionScores.B, max: 6 },
+      { label: 'Severity of Harm', score: sectionScores.C, max: 9 },
+      { label: 'Transparency & Oversight', score: sectionScores.D, max: 6 },
+    ];
+
+    document.getElementById('breakdownItems').innerHTML = sections.map(s => {
+      const p = s.max > 0 ? (s.score / s.max) * 100 : 0;
+      const color = p < 25 ? 'var(--green)' : p < 50 ? 'var(--yellow)' : p < 75 ? 'var(--orange)' : 'var(--red)';
+      return `<div class="breakdown-item">
+        <span class="breakdown-label">${s.label}</span>
+        <div class="breakdown-bar-track">
+          <div class="breakdown-bar-fill" style="width:${p}%; background:${color}"></div>
+        </div>
+        <span class="breakdown-val">${s.score}/${s.max}</span>
+      </div>`;
+    }).join('');
+
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function getReqs(level) {
+    const base = [
+      { icon: '📋', title: 'Basic Registry Entry', desc: 'System name, organisation, purpose, lifecycle phase, responsible owner.' },
+      { icon: '⚖️', title: 'Categorisation Justification', desc: 'Documentation explaining why the system is assigned this risk level.' },
+    ];
+    const medium = [
+      ...base,
+      { icon: '🔍', title: 'Risk Assessment', desc: 'List of identified risks with scale, scope, reversibility, and likelihood.' },
+      { icon: '🛡️', title: 'Mitigation Measures', desc: 'Description of technical and organisational safeguards.' },
+      { icon: '👁️', title: 'Monitoring', desc: 'Performance metrics and periodic review schedule.' },
+    ];
+    const high = [
+      ...medium,
+      { icon: '📊', title: 'DPIA (GDPR)', desc: 'Data Protection Impact Assessment where required.' },
+      { icon: '🏛️', title: 'FRIA (EU AI Act)', desc: 'Fundamental Rights Impact Assessment (particularly for public sector bodies).' },
+      { icon: '👥', title: 'Stakeholder Consultation', desc: 'Documented engagement with affected persons/users.' },
+      { icon: '📢', title: 'Public Communication', desc: 'Information for the public on operation, limitations, and risks.' },
+      { icon: '⚕️', title: 'Redress Mechanism', desc: 'Clear procedure for appeal, complaint, and correction.' },
+    ];
+    const critical = [
+      ...high,
+      { icon: '🚨', title: 'Competent Authority Approval', desc: 'Internal/external approvals required before deployment.' },
+      { icon: '🔬', title: 'Independent Audit', desc: 'External audit for critical cases.' },
+      { icon: '⏸️', title: 'Suspension Plan', desc: 'Plan for immediate suspension/rollback in the event of serious incidents.' },
+    ];
+    const map = { low: base, medium, high, critical };
+    return map[level] || base;
+  }
+
+  function resetTool() {
+    Object.keys(scores).forEach(k => delete scores[k]);
+    answeredCount = 0;
+    updateProgress();
+
+    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active', 'completed'));
+    document.querySelectorAll('.section-score').forEach(s => s.textContent = '-');
+
+    document.getElementById('sec-A').classList.add('active');
+
+    document.getElementById('metaBlock').style.display = 'block';
+    document.getElementById('questionnaire').style.display = 'block';
+    document.getElementById('result').style.display = 'none';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
