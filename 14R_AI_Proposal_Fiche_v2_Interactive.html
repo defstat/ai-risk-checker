@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Δελτίο Πρότασης Έργου Τεχνητής Νοημοσύνης — Stage 1</title>
+    <style>
+        :root {
+            --primary: #1a3a5c;
+            --primary-light: #2c5f8a;
+            --accent: #0066cc;
+            --accent-light: #e8f0fe;
+            --bg: #f5f7fa;
+            --card: #ffffff;
+            --border: #d1d9e6;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+            --section-a: #1e40af;
+            --section-b: #7c3aed;
+            --section-c: #0d9488;
+            --section-d: #d97706;
+            --section-e: #dc2626;
+            --section-f: #be185d;
+            --section-g: #4f46e5;
+            --section-h: #059669;
+            --section-i: #6b7280;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 2rem 2rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .header .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.85;
+            margin-top: 0.25rem;
+        }
+
+        .header .org {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            height: 6px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #34d399, #3b82f6);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 0.3rem;
+            text-align: right;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 0 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            overflow-x: auto;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .nav-pills {
+            display: inline-flex;
+            gap: 0.25rem;
+            padding: 0.5rem 0;
+        }
+
+        .nav-pill {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            background: var(--bg);
+            color: var(--text-light);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .nav-pill:hover {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .nav-pill.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .nav-pill .pill-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* Summary card at top */
+        .summary-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border: 2px solid var(--primary);
+        }
+
+        .summary-card h2 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .summary-field {
+            background: var(--bg);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .summary-field label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .summary-field .value {
+            font-size: 0.9rem;
+            color: var(--text);
+            margin-top: 0.2rem;
+            font-style: italic;
+        }
+
+        /* Main content */
+        .main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem 3rem;
+        }
+
+        /* Section */
+        .section {
+            margin-top: 2rem;
+            scroll-margin-top: 120px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px 12px 0 0;
+            color: white;
+            cursor: pointer;
+            user-select: none;
+            transition: filter 0.2s;
+        }
+
+        .section-header:hover {
+            filter: brightness(1.1);
+        }
+
+        .section-header h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            flex: 1;
+        }
+
+        .section-header .toggle-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+
+        .section-header.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .section-body {
+            background: white;
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            padding: 1.5rem;
+            transition: max-height 0.4s ease;
+            overflow: hidden;
+        }
+
+        .section-body.collapsed {
+            display: none;
+        }
+
+        /* Subsection */
+        .subsection {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #eef2f7;
+        }
+
+        .subsection:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .subsection-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .subsection-title .required {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .field-hint {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            font-style: italic;
+            background: #f8fafc;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent);
+        }
+
+        /* Text input areas */
+        .text-field {
+            width: 100%;
+            min-height: 60px;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s;
+            background: #fafbfc;
+        }
+
+        .text-field:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+        }
+
+        .text-field-inline {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: inherit;
+            background: #fafbfc;
+        }
+
+        .text-field-inline:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+        }
+
+        /* Checkboxes */
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin: 0.5rem 0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            transition: background 0.15s;
+            cursor: pointer;
+        }
+
+        .checkbox-item:hover {
+            background: var(--accent-light);
+        }
+
+        .checkbox-item input[type="checkbox"],
+        .checkbox-item input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            font-size: 0.85rem;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        /* Inline labeled fields */
+        .labeled-field {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .labeled-field span {
+            font-size: 0.85rem;
+            font-weight: 600;
+            min-width: 180px;
+            color: var(--text);
+        }
+
+        .labeled-field input {
+            flex: 1;
+        }
+
+        /* KPI card */
+        .kpi-card {
+            background: var(--bg);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--border);
+        }
+
+        .kpi-card .kpi-num {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-card .labeled-field span {
+            min-width: 160px;
+        }
+
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.5rem 0;
+            font-size: 0.85rem;
+        }
+
+        .data-table th {
+            background: var(--primary);
+            color: white;
+            padding: 0.6rem 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .data-table th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        .data-table th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        .data-table td {
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table td input,
+        .data-table td select {
+            width: 100%;
+            padding: 0.35rem 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-family: inherit;
+            background: white;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        /* Roles list */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        /* Example box */
+        .example-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.8rem;
+            color: #92400e;
+            margin-top: 0.5rem;
+        }
+
+        .example-box::before {
+            content: "💡 ";
+        }
+
+        /* Instruction box */
+        .instruction-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.8rem;
+            color: #1e40af;
+            margin-top: 0.5rem;
+        }
+
+        .instruction-box::before {
+            content: "ℹ️ ";
+        }
+
+        /* Signatures section */
+        .signature-block {
+            background: var(--bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px dashed var(--border);
+        }
+
+        .signature-block h4 {
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        /* Declarations */
+        .declaration-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            padding: 0.5rem 0.6rem;
+            border-radius: 6px;
+            margin-bottom: 0.3rem;
+            background: #fefce8;
+            border: 1px solid #fde68a;
+        }
+
+        .declaration-item input[type="checkbox"] {
+            margin-top: 3px;
+            width: 16px;
+            height: 16px;
+            accent-color: var(--success);
+        }
+
+        .declaration-item label {
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        /* Print button */
+        .action-bar {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 200;
+        }
+
+        .action-btn {
+            padding: 0.7rem 1.2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        }
+
+        .btn-print {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-expand {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-export {
+            background: var(--success);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .summary-grid { grid-template-columns: 1fr; }
+            .roles-grid { grid-template-columns: 1fr; }
+            .labeled-field { flex-direction: column; align-items: flex-start; }
+            .labeled-field span { min-width: auto; }
+            .header h1 { font-size: 1.2rem; }
+        }
+
+        @media print {
+            .header { position: relative; }
+            .nav-container { display: none; }
+            .action-bar { display: none; }
+            .section-body.collapsed { display: block !important; }
+            body { font-size: 10pt; }
+            .section { break-inside: avoid; }
+        }
+
+        /* Word count */
+        .word-count {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            text-align: right;
+            margin-top: 0.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <h1>ΔΕΛΤΙΟ ΠΡΟΤΑΣΗΣ ΕΡΓΟΥ ΤΕΧΝΗΤΗΣ ΝΟΗΜΟΣΥΝΗΣ</h1>
+    <div class="subtitle">STAGE 1 &nbsp;|&nbsp; Έκδοση 2.0 – Φεβρουάριος 2026</div>
+    <div class="org">Ειδική Γραμματεία Τεχνητής Νοημοσύνης και Διακυβέρνησης Δεδομένων</div>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="progress-text" id="progressText">0% συμπληρωμένο</div>
+</div>
+
+<!-- NAVIGATION -->
+<div class="nav-container">
+    <div class="nav-pills">
+        <a class="nav-pill" href="#summary"><span class="pill-dot" style="background:#1a3a5c"></span> Σύνοψη</a>
+        <a class="nav-pill" href="#section-a"><span class="pill-dot" style="background:var(--section-a)"></span> Α: Βασικά</a>
+        <a class="nav-pill" href="#section-b"><span class="pill-dot" style="background:var(--section-b)"></span> Β: Στρατηγική</a>
+        <a class="nav-pill" href="#section-c"><span class="pill-dot" style="background:var(--section-c)"></span> Γ: Εφικτότητα</a>
+        <a class="nav-pill" href="#section-d"><span class="pill-dot" style="background:var(--section-d)"></span> Δ: Δεδομένα</a>
+        <a class="nav-pill" href="#section-e"><span class="pill-dot" style="background:var(--section-e)"></span> Ε: Αποφάσεις</a>
+        <a class="nav-pill" href="#section-f"><span class="pill-dot" style="background:var(--section-f)"></span> ΣΤ: Κίνδυνος</a>
+        <a class="nav-pill" href="#section-g"><span class="pill-dot" style="background:var(--section-g)"></span> Ζ: Χρονοδ.</a>
+        <a class="nav-pill" href="#section-h"><span class="pill-dot" style="background:var(--section-h)"></span> Η: Συμμόρφωση</a>
+        <a class="nav-pill" href="#section-i"><span class="pill-dot" style="background:var(--section-i)"></span> Ι: Δηλώσεις</a>
+    </div>
+</div>
+
+<!-- SUMMARY CARD -->
+<div class="summary-card" id="summary">
+    <h2>📋 Ταυτότητα Πρότασης</h2>
+    <div class="summary-grid">
+        <div class="summary-field">
+            <label>Τίτλος Έργου</label>
+            <div><input type="text" class="text-field-inline track-field" placeholder="______________________________" style="width:100%"></div>
+        </div>
+        <div class="summary-field">
+            <label>Φορέας</label>
+            <div><input type="text" class="text-field-inline track-field" placeholder="______________________________" style="width:100%"></div>
+        </div>
+        <div class="summary-field">
+            <label>Αντικείμενο έργου (1-2 προτάσεις)</label>
+            <div><input type="text" class="text-field-inline track-field" placeholder="______________________________" style="width:100%"></div>
+        </div>
+        <div class="summary-field">
+            <label>Τομέας πολιτικής</label>
+            <div><input type="text" class="text-field-inline track-field" placeholder="______________________________" style="width:100%"></div>
+        </div>
+        <div class="summary-field">
+            <label>Τύπος συστήματος ΤΝ</label>
+            <div><input type="text" class="text-field-inline track-field" placeholder="______________________________" style="width:100%"></div>
+        </div>
+        <div class="summary-field">
+            <label>Προκαταρκτική κατηγορία κινδύνου (AI Act)</label>
+            <div><input type="text" class="text-field-inline track-field" placeholder="______________________________" style="width:100%"></div>
+        </div>
+        <div class="summary-field">
+            <label>Εκτιμώμενος προϋπολογισμός</label>
+            <div><input type="text" class="text-field-inline track-field" placeholder="______________________________" style="width:100%"></div>
+        </div>
+        <div class="summary-field">
+            <label>Επίπεδο ωριμότητας φορέα</label>
+            <div><input type="text" class="text-field-inline track-field" placeholder="______________________________" style="width:100%"></div>
+        </div>
+        <div class="summary-field">
+            <label>Στρατηγική προτεραιότητα έργου</label>
+            <div><input type="text" class="text-field-inline track-field" placeholder="______________________________" style="width:100%"></div>
+        </div>
+    </div>
+</div>
+
+<div class="main">
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- ΜΕΡΟΣ Α: ΒΑΣΙΚΑ ΣΤΟΙΧΕΙΑ              -->
+    <!-- ═══════════════════════════════════════ -->
+    <div class="section" id="section-a">
+        <div class="section-header" style="background: linear-gradient(135deg, var(--section-a), #3b82f6);" onclick="toggleSection(this)">
+            <h2>ΜΕΡΟΣ Α: ΒΑΣΙΚΑ ΣΤΟΙΧΕΙΑ</h2>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+
+            <!-- Α.1 -->
+            <div class="subsection">
+                <div class="subsection-title">Α.1 Στοιχεία Φορέα</div>
+
+                <div class="subsection-title" style="font-size:0.85rem;">Α.1.1 Επωνυμία Φορέα <span class="required">*</span></div>
+                <input type="text" class="text-field-inline track-field" placeholder="_______________________________________________" style="width:100%; margin-bottom:1rem;">
+
+                <div class="subsection-title" style="font-size:0.85rem;">Α.1.2 Υπουργείο / Εποπτεύουσα Αρχή</div>
+                <input type="text" class="text-field-inline track-field" placeholder="_______________________________________________" style="width:100%; margin-bottom:1rem;">
+
+                <div class="subsection-title" style="font-size:0.85rem;">Α.1.3 Υπεύθυνος Έργου <span class="required">*</span></div>
+                <div class="labeled-field"><span>Ονοματεπώνυμο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>Θέση:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>Email:</span><input type="email" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>Τηλέφωνο:</span><input type="tel" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+
+                <div class="subsection-title" style="font-size:0.85rem; margin-top:1rem;">Α.1.4 Υπεύθυνος Προστασίας Δεδομένων (DPO) <span class="required">*</span></div>
+                <div class="labeled-field"><span>Ονοματεπώνυμο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>Email:</span><input type="email" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>Τηλέφωνο:</span><input type="tel" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+            </div>
+
+            <!-- Α.2 -->
+            <div class="subsection">
+                <div class="subsection-title">Α.2 Αναγνωριστικά Έργου</div>
+
+                <div class="subsection-title" style="font-size:0.85rem;">Α.2.1 Τίτλος Έργου <span class="required">*</span></div>
+                <input type="text" class="text-field-inline track-field" placeholder="_______________________________________________" style="width:100%; margin-bottom:0.5rem;">
+                <div class="field-hint">Οδηγία: Χρησιμοποιήστε περιγραφικό όνομα (π.χ., "Σύστημα Έξυπνης Διαχείρισης Αιτημάτων Πολιτών").</div>
+
+                <div class="subsection-title" style="font-size:0.85rem; margin-top:1rem;">Α.2.2 Κωδικός Έργου (εάν υπάρχει)</div>
+                <input type="text" class="text-field-inline track-field" placeholder="_______________________________________________" style="width:100%;">
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- ΜΕΡΟΣ Β: ΣΤΡΑΤΗΓΙΚΗ ΑΙΤΙΟΛΟΓΗΣΗ       -->
+    <!-- ═══════════════════════════════════════ -->
+    <div class="section" id="section-b">
+        <div class="section-header" style="background: linear-gradient(135deg, var(--section-b), #a855f7);" onclick="toggleSection(this)">
+            <h2>ΜΕΡΟΣ Β: ΣΤΡΑΤΗΓΙΚΗ ΑΙΤΙΟΛΟΓΗΣΗ</h2>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+
+            <!-- Β.1 -->
+            <div class="subsection">
+                <div class="subsection-title">Β.1 Πρόβλημα και χαρακτηριστικά προτεινόμενης λύσης</div>
+
+                <div class="subsection-title" style="font-size:0.85rem;">Β.1.1 Περιγραφή Προβλήματος <span class="required">*</span> (300-500 λέξεις)</div>
+                <div class="field-hint">
+                    Περιγράψτε το πρόβλημα ή την πρόκληση που αντιμετωπίζετε:<br>
+                    – Ποια είναι η τρέχουσα κατάσταση;<br>
+                    – Ποιες είναι οι αδυναμίες/ελλείψεις;<br>
+                    – Ποιο είναι το μέγεθος του προβλήματος (π.χ., όγκος αιτημάτων, χρόνος επεξεργασίας);<br>
+                    – Ποιους επηρεάζει (πολίτες, επιχειρήσεις, εσωτερικούς χρήστες);
+                </div>
+                <textarea class="text-field track-field" rows="6" placeholder="_______________________________________________" oninput="updateWordCount(this, 300, 500)"></textarea>
+                <div class="word-count">0 λέξεις (στόχος: 300-500)</div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Β.1.2 Σύντομη περιγραφή προτεινόμενης λύσης με τεχνολογίες ΤΝ (200-300 λέξεις)</div>
+                <div class="field-hint">Περιγράψτε την προτεινόμενη λύση τεχνολογίας ΤΝ.</div>
+                <textarea class="text-field track-field" rows="4" placeholder="_______________________________________________" oninput="updateWordCount(this, 200, 300)"></textarea>
+                <div class="word-count">0 λέξεις (στόχος: 200-300)</div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Β.1.3 Κύριες Λειτουργίες που Θα Εκτελεί το Σύστημα <span class="required">*</span> (3-5 λειτουργίες)</div>
+                <div class="labeled-field"><span>1:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>2:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>3:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>4:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>5:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="example-box">Παράδειγμα: "Αυτόματη κατηγοριοποίηση εισερχόμενων αιτημάτων πολιτών σε 10 θεματικές κατηγορίες με βάση το περιεχόμενο τους"</div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Β.1.4 Τύπος Χρήσης <span class="required">*</span> (Επιλέξτε όλα που ισχύουν)</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="b14_1" class="track-field"><label for="b14_1">Εσωτερική λειτουργία (back-office)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b14_2" class="track-field"><label for="b14_2">Παροχή υπηρεσιών σε πολίτες (front-office)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b14_3" class="track-field"><label for="b14_3">Υποστήριξη λήψης αποφάσεων (βλ και Ενότητα Ε)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b14_4" class="track-field"><label for="b14_4">Αυτοματοποίηση διαδικασιών</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b14_5" class="track-field"><label for="b14_5">Κατάταξη ή ιεράρχηση</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b14_6" class="track-field"><label for="b14_6">Ανάλυση και πρόβλεψη</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b14_7" class="track-field"><label for="b14_7">Chatbot / Virtual Assistant</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b14_8" class="track-field"><label for="b14_8">Επεξεργασία εγγράφων</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b14_9" class="track-field"><label for="b14_9">Παραγωγή περιεχομένου</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Β.1.5 Τύπος Τεχνολογίας ΤΝ που προτείνεται <span class="required">*</span> (Επιλέξτε όλα που ισχύουν)</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="b15_1" class="track-field"><label for="b15_1">Προγνωστικό μοντέλο (ταξινόμηση / παλινδρόμηση)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b15_2" class="track-field"><label for="b15_2">Σύστημα συστάσεων (Recommendation system)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b15_3" class="track-field"><label for="b15_3">Σύστημα υποστήριξης λήψης αποφάσεων</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b15_4" class="track-field"><label for="b15_4">Σύστημα αυτοματοποιημένης λήψης αποφάσεων</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b15_5" class="track-field"><label for="b15_5">Σύστημα Παραγωγικής Τεχνητής Νοημοσύνης (Generative AI)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b15_6" class="track-field"><label for="b15_6">Βιομετρικό σύστημα</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b15_7" class="track-field"><label for="b15_7">Επεξεργασία φυσικής γλώσσας / επεξεργασία κειμένου (NLP)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b15_8" class="track-field"><label for="b15_8">Υπολογιστική όραση / ανάλυση εικόνας (Computer Vision)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b15_9" class="track-field"><label for="b15_9">Δεν έχει καθοριστεί ακόμη</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Β.1.7 Γιατί η ΤΝ είναι Απαραίτητη <span class="required">*</span> (200-300 λέξεις)</div>
+                <div class="field-hint">Εξηγήστε γιατί η ΤΝ είναι η καταλληλότερη λύση. Ποιες μη-ΤΝ λύσεις εξετάστηκαν και γιατί απορρίφθηκαν;</div>
+                <textarea class="text-field track-field" rows="4" placeholder="_______________________________________________" oninput="updateWordCount(this, 200, 300)"></textarea>
+                <div class="word-count">0 λέξεις (στόχος: 200-300)</div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Β.1.8 Τομέας Εφαρμογής <span class="required">*</span></div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="b18_1" class="track-field"><label for="b18_1">Υγεία / Healthcare</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b18_2" class="track-field"><label for="b18_2">Δικαιοσύνη / Justice</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b18_3" class="track-field"><label for="b18_3">Εκπαίδευση / Education</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b18_4" class="track-field"><label for="b18_4">Φορολογία / Taxation</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b18_5" class="track-field"><label for="b18_5">Κοινωνική Ασφάλιση / Social Security</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b18_6" class="track-field"><label for="b18_6">Δημόσια Ασφάλεια / Public Safety</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b18_7" class="track-field"><label for="b18_7">Περιβάλλον / Environment</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b18_8" class="track-field"><label for="b18_8">Διοικητικές Υπηρεσίες / Administrative Services</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b18_9" class="track-field"><label for="b18_9">Μεταφορές / Transportation</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b18_10" class="track-field"><label for="b18_10">Ενέργεια / Energy</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+            </div>
+
+            <!-- Β.2 -->
+            <div class="subsection">
+                <div class="subsection-title">Β.2 Στόχευση και κριτήρια επιτυχίας</div>
+
+                <div class="subsection-title" style="font-size:0.85rem;">Β.2.1 Σκοπός του Συστήματος ΤΝ <span class="required">*</span> (200-400 λέξεις)</div>
+                <textarea class="text-field track-field" rows="5" placeholder="_______________________________________________" oninput="updateWordCount(this, 200, 400)"></textarea>
+                <div class="word-count">0 λέξεις (στόχος: 200-400)</div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Β.2.2 Δημόσιο Συμφέρον <span class="required">*</span> (150-300 λέξεις)</div>
+                <div class="field-hint">Εξηγήστε πώς το έργο εξυπηρετεί το δημόσιο συμφέρον: οφέλη για πολίτες/επιχειρήσεις, βελτίωση ποιότητας υπηρεσιών, εξοικονόμηση πόρων.</div>
+                <textarea class="text-field track-field" rows="4" placeholder="_______________________________________________" oninput="updateWordCount(this, 150, 300)"></textarea>
+                <div class="word-count">0 λέξεις (στόχος: 150-300)</div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Β.2.3 Ευθυγράμμιση με τον Στρατηγικό Σχεδιασμό για την ΤΝ <span class="required">*</span> (300 λέξεις)</div>
+                <div class="field-hint">Περιγράψτε πως ευθυγραμμίζεται το έργο με Εθνικές κατευθυντήριες γραμμές και Στρατηγικές προτεραιότητες σε σχέση με την Τεχνητή Νοημοσύνη.</div>
+                <textarea class="text-field track-field" rows="4" placeholder="_______________________________________________" oninput="updateWordCount(this, 0, 300)"></textarea>
+                <div class="word-count">0 λέξεις (στόχος: 300)</div>
+
+                <p style="margin-top:1rem; font-size:0.85rem; font-weight:600;">Σημειώστε τις κατευθύνσεις με τις οποίες ευθυγραμμίζεται το έργο <span class="required">*</span></p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="b23_1" class="track-field"><label for="b23_1">Προετοιμασία πολιτών για τη μετάβαση στην ΑΙ</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b23_2" class="track-field"><label for="b23_2">Βελτίωση απόδοσης δημόσιας διοίκησης</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b23_3" class="track-field"><label for="b23_3">Προστασία και ενίσχυση της δημοκρατίας</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b23_4" class="track-field"><label for="b23_4">Προώθηση υγείας και ποιότητας ζωής</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b23_5" class="track-field"><label for="b23_5">Δημοκρατισμός εκπαίδευσης και πρόσβασης</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b23_6" class="track-field"><label for="b23_6">Ελκυστική προσέλκυση επενδύσεων ΑΙ</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b23_7" class="track-field"><label for="b23_7">Διατήρηση και εμπλουτισμός πολιτιστικής κληρονομιάς</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b23_8" class="track-field"><label for="b23_8">Κλιματική μετρίαση και προσαρμογή</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b23_9" class="track-field"><label for="b23_9">Ενίσχυση εθνικής ασφάλειας</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+
+                <p style="margin-top:1rem; font-size:0.85rem; font-weight:600;">Δηλώστε τη σχέση του έργου με εμβληματικές Flagship Πρωτοβουλίες σε Εθνικό Επίπεδο <span class="required">*</span></p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="fp1" class="track-field"><label for="fp1">FP1: Μοντέλο Δεδομένων & Διακυβέρνησης ΑΙ</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="fp2" class="track-field"><label for="fp2">FP2: Κέντρο Αριστείας ΑΙ & Εκπαίδευση</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="fp3" class="track-field"><label for="fp3">FP3: Κεντρική Πλατφόρμα Εκπαίδευσης ΑΙ</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="fp4" class="track-field"><label for="fp4">FP4: Οικοσύστημα ΑΙ & Καινοτομίας</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="fp5" class="track-field"><label for="fp5">FP5: Ελληνική Γλώσσα & Πολιτιστική Δεδομένων</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Β.2.4 Ευθυγράμμιση με τομεακό στρατηγικό σχεδιασμό <span class="required">*</span> (300 λέξεις)</div>
+                <div class="field-hint">Περιγράψτε πως ευθυγραμμίζεται το έργο με τομεακή στρατηγική του φορέα σας.</div>
+                <textarea class="text-field track-field" rows="4" placeholder="_______________________________________________" oninput="updateWordCount(this, 0, 300)"></textarea>
+                <div class="word-count">0 λέξεις (στόχος: 300)</div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Β.2.5 Κριτήρια επιτυχίας</div>
+                <p style="font-size:0.85rem; margin-bottom:0.5rem;">Πώς θα καθοριστεί η επιτυχία του έργου:</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="b25_1" class="track-field"><label for="b25_1">Επιχειρησιακή αποτελεσματικότητα</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b25_2" class="track-field"><label for="b25_2">Βελτίωση ακρίβειας</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b25_3" class="track-field"><label for="b25_3">Μείωση κόστους</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b25_4" class="track-field"><label for="b25_4">Ικανοποίηση πολιτών / επιχειρήσεων</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="b25_5" class="track-field"><label for="b25_5">Βελτίωση αμεροληψίας</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Β.2.6 Μετρήσιμοι Στόχοι / KPIs <span class="required">*</span></div>
+                <div class="kpi-card">
+                    <div class="kpi-num">KPI #1</div>
+                    <div class="labeled-field"><span>Στόχος:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                    <div class="labeled-field"><span>Μέτρηση (KPI):</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                    <div class="labeled-field"><span>Τιμή-Στόχος (ποσοτικά):</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                    <div class="labeled-field"><span>Χρονοδιάγραμμα Επίτευξης:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-num">KPI #2</div>
+                    <div class="labeled-field"><span>Στόχος:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                    <div class="labeled-field"><span>Μέτρηση (KPI):</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                    <div class="labeled-field"><span>Τιμή-Στόχος (ποσοτικά):</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                    <div class="labeled-field"><span>Χρονοδιάγραμμα Επίτευξης:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-num">KPI #3</div>
+                    <div class="labeled-field"><span>Στόχος:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                    <div class="labeled-field"><span>Μέτρηση (KPI):</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                    <div class="labeled-field"><span>Τιμή-Στόχος (ποσοτικά):</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                    <div class="labeled-field"><span>Χρονοδιάγραμμα Επίτευξης:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                </div>
+                <div class="example-box">Παράδειγμα: "Στόχος: Μείωση χρόνου απόκρισης | KPI: Μέσος χρόνος από υποβολή έως απάντηση | Τιμή-Στόχος: Από 5 ημέρες σε 2 ημέρες | Χρονοδ.: 6 μήνες από εκκίνηση"</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- ΜΕΡΟΣ Γ: ΕΦΙΚΤΟΤΗΤΑ                   -->
+    <!-- ═══════════════════════════════════════ -->
+    <div class="section" id="section-c">
+        <div class="section-header" style="background: linear-gradient(135deg, var(--section-c), #14b8a6);" onclick="toggleSection(this)">
+            <h2>ΜΕΡΟΣ Γ: ΕΦΙΚΤΟΤΗΤΑ</h2>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+
+            <!-- Γ.1 -->
+            <div class="subsection">
+                <div class="subsection-title">Γ.1 Οργανωσιακή ετοιμότητα</div>
+
+                <div class="subsection-title" style="font-size:0.85rem;">Γ.1.1 Εκτίμηση Εσωτερικών Ικανοτήτων <span class="required">*</span></div>
+                <div class="field-hint">Διαθέτει ο φορέας εσωτερικά τις απαραίτητες ικανότητες για την υλοποίηση και λειτουργία του συστήματος;</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="c11" id="c11_1" class="track-field"><label for="c11_1">Ναι – Διαθέτουμε εξειδικευμένο προσωπικό ΤΝ</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c11" id="c11_2" class="track-field"><label for="c11_2">Μερικώς – Διαθέτουμε προσωπικό αλλά όχι εξειδίκευση ΤΝ</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c11" id="c11_3" class="track-field"><label for="c11_3">Όχι – Θα βασιστούμε κυρίως σε εξωτερικούς αναδόχους</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c11" id="c11_4" class="track-field"><label for="c11_4">Προγραμματίζεται κατάρτιση</label></div>
+                </div>
+
+                <p style="font-size:0.85rem; font-weight:600; margin-top:1rem;">Αναφέρετε το επίπεδο ικανοτήτων ανά κατηγορία:</p>
+                <table class="data-table">
+                    <thead><tr><th>Ικανότητα</th><th>Επίπεδο</th></tr></thead>
+                    <tbody>
+                        <tr><td>Ανάλυση δεδομένων</td><td><select class="track-field"><option value="">-- Επιλογή --</option><option>Ναι</option><option>Μερικώς</option><option>Όχι</option></select></td></tr>
+                        <tr><td>Μηχανική μάθηση</td><td><select class="track-field"><option value="">-- Επιλογή --</option><option>Ναι</option><option>Μερικώς</option><option>Όχι</option></select></td></tr>
+                        <tr><td>Διαχείριση δεδομένων</td><td><select class="track-field"><option value="">-- Επιλογή --</option><option>Ναι</option><option>Μερικώς</option><option>Όχι</option></select></td></tr>
+                        <tr><td>Διακυβέρνηση ΤΝ</td><td><select class="track-field"><option value="">-- Επιλογή --</option><option>Ναι</option><option>Μερικώς</option><option>Όχι</option></select></td></tr>
+                        <tr><td>Κυβερνοασφάλεια</td><td><select class="track-field"><option value="">-- Επιλογή --</option><option>Ναι</option><option>Μερικώς</option><option>Όχι</option></select></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Γ.1.2 Διακυβέρνηση Έργου ΤΝ</div>
+                <div class="field-hint">Υπάρχει καθορισμένη δομή διακυβέρνησης για το έργο;</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="c12_1" class="track-field"><label for="c12_1">Ναι – υπάρχει καθορισμένη ομάδα έργου</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c12_2" class="track-field"><label for="c12_2">Ναι – υπάρχει και επιτροπή εποπτείας</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c12_3" class="track-field"><label for="c12_3">Υπό διαμόρφωση</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c12_4" class="track-field"><label for="c12_4">Όχι ακόμη</label></div>
+                </div>
+
+                <p style="font-size:0.85rem; font-weight:600; margin-top:1rem;">Προσδιορίστε τους βασικούς ρόλους:</p>
+                <div class="labeled-field"><span>Επιχειρησιακός υπεύθυνος:</span><input type="text" class="text-field-inline track-field" placeholder=""></div>
+                <div class="labeled-field"><span>Υπεύθυνος έργου:</span><input type="text" class="text-field-inline track-field" placeholder=""></div>
+                <div class="labeled-field"><span>Υπεύθυνος Δεδομένων:</span><input type="text" class="text-field-inline track-field" placeholder=""></div>
+                <div class="labeled-field"><span>Υπεύθυνος ΤΝ:</span><input type="text" class="text-field-inline track-field" placeholder=""></div>
+                <div class="labeled-field"><span>Υπεύθυνος Νομικής υποστήριξης:</span><input type="text" class="text-field-inline track-field" placeholder=""></div>
+                <div class="labeled-field"><span>Υπεύθυνος διαχείρισης ρίσκου:</span><input type="text" class="text-field-inline track-field" placeholder=""></div>
+                <div class="labeled-field"><span>Άλλο:</span><input type="text" class="text-field-inline track-field" placeholder=""></div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Γ.1.3 Σχέδιο Διαχείρισης Αλλαγών <span class="required">*</span></div>
+                <div class="field-hint">Πώς θα διαχειριστείτε την οργανωτική αλλαγή που φέρνει η ΤΝ;</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="c13_1" class="track-field"><label for="c13_1">Εσωτερική ενημέρωση/επικοινωνία στους εργαζόμενους</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c13_2" class="track-field"><label for="c13_2">Πρόγραμμα εκπαίδευσης/κατάρτισης προσωπικού</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c13_3" class="track-field"><label for="c13_3">Ορισμός "AI Champion" / Υπεύθυνου Μετάβασης</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c13_4" class="track-field"><label for="c13_4">Σχέδιο αναθεώρησης εσωτερικών διαδικασιών</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c13_5" class="track-field"><label for="c13_5">Δεν έχει εκτιμηθεί ακόμη</label></div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Γ.1.4 Εμπειρία στη χρήση ΤΝ <span class="required">*</span></div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="c14" id="c14_1" class="track-field"><label for="c14_1">Καμία προηγούμενη εμπειρία</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c14" id="c14_2" class="track-field"><label for="c14_2">Περιορισμένη εμπειρία (πιλοτικά έργα)</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c14" id="c14_3" class="track-field"><label for="c14_3">Μέτρια εμπειρία (μερική χρήση ΤΝ)</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c14" id="c14_4" class="track-field"><label for="c14_4">Υψηλή εμπειρία (πολλαπλά συστήματα ΤΝ)</label></div>
+                </div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Αναφέρετε σχετικά έργα (αν υπάρχουν)</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+            </div>
+
+            <!-- Γ.2 -->
+            <div class="subsection">
+                <div class="subsection-title">Γ.2 Τεχνική Εφικτότητα</div>
+
+                <div class="subsection-title" style="font-size:0.85rem;">Γ.2.1 Προτεινόμενη τεχνολογική προσέγγιση</div>
+                <div class="field-hint">Ποια είναι η πιθανή τεχνολογική προσέγγιση για την υλοποίηση του συστήματος;</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="c21" id="c21_1" class="track-field"><label for="c21_1">Χρήση έτοιμου εμπορικού προϊόντος (SaaS/COTS)</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c21" id="c21_2" class="track-field"><label for="c21_2">Χρήση pre-trained μοντέλου μέσω API</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c21" id="c21_3" class="track-field"><label for="c21_3">Ανάπτυξη custom λύσης με εξειδικευμένο ανάδοχο</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c21" id="c21_4" class="track-field"><label for="c21_4">Fine-tuning υπάρχοντος μοντέλου</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c21" id="c21_5" class="track-field"><label for="c21_5">Δεν έχει αποφασιστεί ακόμη</label></div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Γ.2.2 Ωριμότητα τεχνολογίας ΤΝ που πρόκειται να αξιοποιηθεί</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="c22" id="c22_1" class="track-field"><label for="c22_1">Υπάρχουν ήδη εμπορικές λύσεις στην αγορά</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c22" id="c22_2" class="track-field"><label for="c22_2">Υπάρχουν πιλοτικές εφαρμογές στον δημόσιο τομέα</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c22" id="c22_3" class="track-field"><label for="c22_3">Η τεχνολογία βρίσκεται σε πρώιμο στάδιο</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c22" id="c22_4" class="track-field"><label for="c22_4">Δεν έχει αξιολογηθεί ακόμη</label></div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Γ.2.3 Υποδομές Πληροφορικής</div>
+                <div class="field-hint">Ποια υποδομή θα χρησιμοποιηθεί για τη λειτουργία του συστήματος;</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="c23_1" class="track-field"><label for="c23_1">Δημόσιο ή ιδιωτικό cloud</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c23_2" class="track-field"><label for="c23_2">Κυβερνητικό cloud / G-Cloud</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c23_3" class="track-field"><label for="c23_3">Υβριδικό μοντέλο</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c23_4" class="track-field"><label for="c23_4">Υφιστάμενη υποδομή του φορέα</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c23_5" class="track-field"><label for="c23_5">Υπερυπολογιστής</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c23_6" class="track-field"><label for="c23_6">Δεν έχει καθοριστεί ακόμη</label></div>
+                </div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Περιγράψτε</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Γ.2.4 Διαλειτουργικότητα και Ενσωμάτωση</div>
+                <div class="field-hint">Το προτεινόμενο σύστημα ΤΝ θα ενσωματωθεί / διασυνδεθεί με υπάρχοντα πληροφοριακά συστήματα;</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="c24" id="c24_1" class="track-field"><label for="c24_1">ΝΑΙ</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c24" id="c24_2" class="track-field"><label for="c24_2">ΟΧΙ</label></div>
+                </div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Αν απαντήσατε ΝΑΙ, με ποια συστήματα και με ποιόν τρόπο (πχ APIs, ανταλλαγή αρχείων, ΚΕΔ);</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Γ.2.5 Ασφάλεια συστήματος</div>
+                <div class="field-hint">Έχουν εξεταστεί οι απαιτήσεις ασφάλειας συστήματος; (Σημειώστε ποιες)</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="c25_1" class="track-field"><label for="c25_1">Κυβερνοασφάλεια υποδομών</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c25_2" class="track-field"><label for="c25_2">Προστασία δεδομένων</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c25_3" class="track-field"><label for="c25_3">Προστασία μοντέλου ΤΝ από επιθέσεις</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c25_4" class="track-field"><label for="c25_4">Έλεγχος πρόσβασης χρηστών</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="c25_5" class="track-field"><label for="c25_5">Καταγραφή ενεργειών (logging)</label></div>
+                </div>
+            </div>
+
+            <!-- Γ.3 -->
+            <div class="subsection">
+                <div class="subsection-title">Γ.3 Διενέργεια PoC</div>
+                <div class="field-hint">Έχει πραγματοποιηθεί Proof of Concept για το προτεινόμενο σύστημα;</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="c3" id="c3_1" class="track-field"><label for="c3_1">Ναι – έχει ολοκληρωθεί</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c3" id="c3_2" class="track-field"><label for="c3_2">Ναι – βρίσκεται σε εξέλιξη</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c3" id="c3_3" class="track-field"><label for="c3_3">Όχι – θα γίνει στο πλαίσιο πιλοτικής λειτουργίας κατά την υλοποίηση</label></div>
+                    <div class="checkbox-item"><input type="radio" name="c3" id="c3_4" class="track-field"><label for="c3_4">Όχι – δεν θεωρείται απαραίτητο</label></div>
+                </div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Αιτιολόγηση</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- ΜΕΡΟΣ Δ: ΔΕΔΟΜΕΝΑ                     -->
+    <!-- ═══════════════════════════════════════ -->
+    <div class="section" id="section-d">
+        <div class="section-header" style="background: linear-gradient(135deg, var(--section-d), #f59e0b);" onclick="toggleSection(this)">
+            <h2>ΜΕΡΟΣ Δ: ΔΕΔΟΜΕΝΑ</h2>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+
+            <div class="subsection">
+                <div class="subsection-title">Δ.1 Κατηγορίες Δεδομένων</div>
+
+                <div class="subsection-title" style="font-size:0.85rem;">Δ.1.1 Πηγές Δεδομένων <span class="required">*</span></div>
+                <div class="field-hint">Ποιες είναι οι βασικές πηγές δεδομένων που θα χρησιμοποιηθούν; Από πού θα προέρχονται; Σε τι μορφή είναι;</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="d11_1" class="track-field"><label for="d11_1">Υφιστάμενες βάσεις δεδομένων του φορέα</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d11_2" class="track-field"><label for="d11_2">Δεδομένα άλλων δημόσιων φορέων</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d11_3" class="track-field"><label for="d11_3">Ανοιχτά δεδομένα</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d11_4" class="track-field"><label for="d11_4">Δεδομένα που θα συλλεχθούν στο πλαίσιο του έργου</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d11_5" class="track-field"><label for="d11_5">Συνδυασμός των παραπάνω</label></div>
+                </div>
+
+                <table class="data-table" style="margin-top:1rem;">
+                    <thead><tr><th>Πηγή Δεδομένων</th><th>Φορέας / Σύστημα</th><th>Τύπος Δεδομένων (πχ δομημένα / κείμενο / εικόνα / ροές)</th></tr></thead>
+                    <tbody>
+                        <tr><td><input type="text" class="track-field"></td><td><input type="text" class="track-field"></td><td><input type="text" class="track-field"></td></tr>
+                        <tr><td><input type="text" class="track-field"></td><td><input type="text" class="track-field"></td><td><input type="text" class="track-field"></td></tr>
+                        <tr><td><input type="text" class="track-field"></td><td><input type="text" class="track-field"></td><td><input type="text" class="track-field"></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Δ.1.2 Διαθεσιμότητα Δεδομένων <span class="required">*</span></div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="d12" id="d12_1" class="track-field"><label for="d12_1">Τα δεδομένα είναι ήδη διαθέσιμα στον φορέα</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d12" id="d12_2" class="track-field"><label for="d12_2">Τα δεδομένα υπάρχουν αλλά απαιτείται διαδικασία λήψης από άλλους φορείς</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d12" id="d12_3" class="track-field"><label for="d12_3">Τα δεδομένα υπάρχουν αλλά δεν είναι ψηφιοποιημένα</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d12" id="d12_4" class="track-field"><label for="d12_4">Τα δεδομένα θα πρέπει να συλλεχθούν</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d12" id="d12_5" class="track-field"><label for="d12_5">Δεν είναι ακόμη σαφές</label></div>
+                </div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Περιγράψτε</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+
+                <p style="font-size:0.85rem; font-weight:600; margin-top:1rem;">Υπάρχουν περιορισμοί πρόσβασης στα δεδομένα;</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="d12b" id="d12b_1" class="track-field"><label for="d12b_1">Ναι</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d12b" id="d12b_2" class="track-field"><label for="d12b_2">Όχι</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d12b" id="d12b_3" class="track-field"><label for="d12b_3">Δεν είναι ακόμη σαφές</label></div>
+                </div>
+
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Σε περίπτωση περιορισμών ή ανάγκης διαμοιρασμού, πώς θα εξασφαλιστεί η πρόσβαση;</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="d12c_1" class="track-field"><label for="d12c_1">Διαλειτουργικότητα μέσω APIs</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d12c_2" class="track-field"><label for="d12c_2">Συμφωνίες διαμοιρασμού δεδομένων</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d12c_3" class="track-field"><label for="d12c_3">Διαλειτουργική πλατφόρμα δημοσίου</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d12c_4" class="track-field"><label for="d12c_4">Δεν έχει καθοριστεί ακόμη</label></div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Δ.1.3 Ποιότητα και πληρότητα Δεδομένων <span class="required">*</span></div>
+                <table class="data-table">
+                    <thead><tr><th>Παράμετρος</th><th>Εκτίμηση</th></tr></thead>
+                    <tbody>
+                        <tr><td>Πληρότητα δεδομένων</td><td><select class="track-field"><option value="">-- Επιλογή --</option><option>Υψηλή</option><option>Μέτρια</option><option>Χαμηλή</option></select></td></tr>
+                        <tr><td>Ακρίβεια δεδομένων</td><td><select class="track-field"><option value="">-- Επιλογή --</option><option>Υψηλή</option><option>Μέτρια</option><option>Χαμηλή</option></select></td></tr>
+                        <tr><td>Βαθμός επικαιροποίησης δεδομένων</td><td><select class="track-field"><option value="">-- Επιλογή --</option><option>Υψηλή</option><option>Μέτρια</option><option>Χαμηλή</option></select></td></tr>
+                        <tr><td>Αντιπροσωπευτικότητα δεδομένων</td><td><select class="track-field"><option value="">-- Επιλογή --</option><option>Υψηλή</option><option>Μέτρια</option><option>Χαμηλή</option></select></td></tr>
+                    </tbody>
+                </table>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Περιγράψτε</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+
+                <p style="font-size:0.85rem; font-weight:600; margin-top:1rem;">Υπάρχει πιθανότητα τα δεδομένα να περιέχουν μεροληψίες (Data Bias);</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="d13b" id="d13b_1" class="track-field"><label for="d13b_1">Ναι</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d13b" id="d13b_2" class="track-field"><label for="d13b_2">Όχι</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d13b" id="d13b_3" class="track-field"><label for="d13b_3">Δεν είναι σαφές</label></div>
+                </div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Περιγράψτε τον τρόπο που θα αντιμετωπιστούν</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Δ.1.4 Εκτίμηση Όγκου Δεδομένων</div>
+                <p style="font-size:0.85rem;">Ο όγκος δεδομένων θεωρείται επαρκής για την ανάπτυξη συστήματος ΤΝ;</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="d14a" id="d14a_1" class="track-field"><label for="d14a_1">Ναι</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d14a" id="d14a_2" class="track-field"><label for="d14a_2">Μερικώς</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d14a" id="d14a_3" class="track-field"><label for="d14a_3">Όχι, απαιτείται εμπλουτισμός</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d14a" id="d14a_4" class="track-field"><label for="d14a_4">Δεν γνωρίζω</label></div>
+                </div>
+                <p style="font-size:0.85rem; font-weight:600; margin-top:0.75rem;">Εκτιμώμενος όγκος:</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="d14b" id="d14b_1" class="track-field"><label for="d14b_1">&lt; 1.000 εγγραφές</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d14b" id="d14b_2" class="track-field"><label for="d14b_2">1.000 – 10.000</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d14b" id="d14b_3" class="track-field"><label for="d14b_3">10.000 – 100.000</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d14b" id="d14b_4" class="track-field"><label for="d14b_4">100.000 – 1.000.000</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d14b" id="d14b_5" class="track-field"><label for="d14b_5">&gt; 1.000.000</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d14b" id="d14b_6" class="track-field"><label for="d14b_6">Δεν γνωρίζω</label></div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Δ.1.5 Βαθμός ετοιμότητας χρήσης δεδομένων</div>
+                <p style="font-size:0.85rem;">Απαιτείται επεξεργασία των δεδομένων πριν τη χρήση τους;</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="d15_1" class="track-field"><label for="d15_1">Καθαρισμός δεδομένων</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d15_2" class="track-field"><label for="d15_2">Ανωνυμοποίηση / ψευδωνυμοποίηση</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d15_3" class="track-field"><label for="d15_3">Εμπλουτισμός δεδομένων</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d15_4" class="track-field"><label for="d15_4">Μετατροπή μορφής δεδομένων</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d15_5" class="track-field"><label for="d15_5">Τα δεδομένα είναι έτοιμα προς χρήση</label></div>
+                </div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Περιγράψτε</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Δ.1.6 Διακυβέρνηση Δεδομένων</div>
+                <p style="font-size:0.85rem;">Υπάρχει τυπική πολιτική διακυβέρνησης δεδομένων στον φορέα;</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="d16" id="d16_1" class="track-field"><label for="d16_1">Ναι, υπάρχει καταγεγραμμένη πολιτική</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d16" id="d16_2" class="track-field"><label for="d16_2">Υπό ανάπτυξη</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d16" id="d16_3" class="track-field"><label for="d16_3">Όχι</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d16" id="d16_4" class="track-field"><label for="d16_4">Δεν γνωρίζω</label></div>
+                </div>
+                <div class="labeled-field" style="margin-top:0.75rem;"><span>Ρόλος/Τμήμα Data Owner:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Πώς διασφαλίζεται η ποιότητα των δεδομένων (καθαρισμός, ενημέρωση, αποθήκευση);</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Δ.1.7 Προστασία Δεδομένων <span class="required">*</span></div>
+                <p style="font-size:0.85rem;">Το σύστημα θα επεξεργάζεται δεδομένα προσωπικού χαρακτήρα;</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="d17" id="d17_1" class="track-field"><label for="d17_1">Ναι</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d17" id="d17_2" class="track-field"><label for="d17_2">Όχι</label></div>
+                    <div class="checkbox-item"><input type="radio" name="d17" id="d17_3" class="track-field"><label for="d17_3">Δεν γνωρίζω</label></div>
+                </div>
+
+                <p style="font-size:0.85rem; font-weight:600; margin-top:0.75rem;">Εάν Ναι, επιλέξτε κατηγορίες:</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="d17c_1" class="track-field"><label for="d17c_1">Αναγνωριστικά (ΑΦΜ, ΑΜΚΑ, όνομα)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d17c_2" class="track-field"><label for="d17c_2">Δημογραφικά (ηλικία, φύλο, εθνικότητα)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d17c_3" class="track-field"><label for="d17c_3">Οικονομικά (εισόδημα, φορολογικά)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d17c_4" class="track-field"><label for="d17c_4">Επικοινωνίας</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d17c_5" class="track-field"><label for="d17c_5">Βιομετρικά</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d17c_6" class="track-field"><label for="d17c_6">Υγείας</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d17c_7" class="track-field"><label for="d17c_7">Προφίλ</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d17c_8" class="track-field"><label for="d17c_8">Ευαίσθητα (φυλή, θρησκεία, πολιτικά φρονήματα)</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+
+                <p style="font-size:0.85rem; font-weight:600; margin-top:0.75rem;">Έχει εξεταστεί η ανάγκη για:</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="d17d_1" class="track-field"><label for="d17d_1">Νομική βάση επεξεργασίας</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d17d_2" class="track-field"><label for="d17d_2">Δημόσιο συμφέρον</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d17d_3" class="track-field"><label for="d17d_3">Συναίνεση</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- ΜΕΡΟΣ Ε: ΑΠΟΦΑΣΕΙΣ ΚΑΙ ΕΠΙΠΤΩΣΕΙΣ     -->
+    <!-- ═══════════════════════════════════════ -->
+    <div class="section" id="section-e">
+        <div class="section-header" style="background: linear-gradient(135deg, var(--section-e), #ef4444);" onclick="toggleSection(this)">
+            <h2>ΜΕΡΟΣ Ε: ΑΠΟΦΑΣΕΙΣ ΚΑΙ ΕΠΙΠΤΩΣΕΙΣ</h2>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Ε.1.1 Τύπος αποφάσεων που επηρεάζονται από το σύστημα ΤΝ <span class="required">*</span></div>
+                <div class="field-hint">Τι είδους αποφάσεις θα λαμβάνονται με/από το σύστημα; Ταξινόμηση, προτεραιοποίηση, πρόβλεψη, σύσταση, έγκριση/απόρριψη;</div>
+                <textarea class="text-field track-field" rows="3" placeholder="_______________________________________________"></textarea>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Ε.1.2 Βαθμός Αυτοματισμού <span class="required">*</span></div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="e12" id="e12_1" class="track-field"><label for="e12_1">Πλήρως αυτόματη απόφαση (χωρίς ανθρώπινη επέμβαση)</label></div>
+                    <div class="checkbox-item"><input type="radio" name="e12" id="e12_2" class="track-field"><label for="e12_2">Αυτόματη με δυνατότητα ανθρώπινης παρέμβασης</label></div>
+                    <div class="checkbox-item"><input type="radio" name="e12" id="e12_3" class="track-field"><label for="e12_3">Υποστήριξη απόφασης (ο άνθρωπος αποφασίζει)</label></div>
+                    <div class="checkbox-item"><input type="radio" name="e12" id="e12_4" class="track-field"><label for="e12_4">Συμβουλευτικό (παρέχει μόνο πληροφορίες)</label></div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Ε.1.3 Ανθρώπινη Επίβλεψη που Προβλέπεται <span class="required">*</span></div>
+                <div class="field-hint">Ποιος θα επιβλέπει; Πόσο συχνά; Σε ποια σημεία της διαδικασίας;</div>
+                <div class="labeled-field"><span>Υπεύθυνος Επίβλεψης (ρόλος):</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>Συχνότητα αναθεώρησης αποφάσεων:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>Σημεία ελέγχου στη διαδικασία:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Περιγραφή μηχανισμού επίβλεψης</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Ε.1.4 Επιπτώσεις των Αποφάσεων <span class="required">*</span></div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="e14_1" class="track-field"><label for="e14_1">Έχουν νομικές συνέπειες (π.χ., έγκριση/απόρριψη δικαιώματος)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="e14_2" class="track-field"><label for="e14_2">Επηρεάζουν σημαντικά τα άτομα (πρόσβαση σε υπηρεσίες, οικονομικές επιπτώσεις)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="e14_3" class="track-field"><label for="e14_3">Είναι κυρίως διαδικαστικές/διοικητικές (χαμηλές επιπτώσεις)</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Εάν έχουν νομικές ή σημαντικές συνέπειες, εξηγήστε</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">Ε.2 Επιπτώσεις στους Ενδιαφερόμενους</div>
+                <div class="field-hint">Η ουσιαστική εμπλοκή των ενδιαφερόμενων μερών είναι απαραίτητη για την αποδοχή και επιτυχία του συστήματος.</div>
+
+                <div class="subsection-title" style="font-size:0.85rem; margin-top:1rem;">Ε.2.1 Χαρτογράφηση Ενδιαφερόμενων Μερών</div>
+                <div class="labeled-field"><span>Άμεσοι αποδέκτες (εσωτερικοί):</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>Άμεσοι αποδέκτες (εξωτερικοί):</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>Εμμέσως επηρεαζόμενοι:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>Αντίσταση/Ανησυχίες:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Ε.2.2 Σχέδιο Διαβούλευσης</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="e22_1" class="track-field"><label for="e22_1">Εσωτερικές συναντήσεις με χρήστες πριν την ανάπτυξη</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="e22_2" class="track-field"><label for="e22_2">Δημόσια διαβούλευση / ακρόαση πολιτών</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="e22_3" class="track-field"><label for="e22_3">Ομάδες εστίασης (focus groups)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="e22_4" class="track-field"><label for="e22_4">Ερωτηματολόγιο/έρευνα χρηστών</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="e22_5" class="track-field"><label for="e22_5">Δεν προγραμματίζεται διαβούλευση</label></div>
+                </div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Αποτελέσματα υπάρχουσας διαβούλευσης (εάν έχει γίνει)</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- ΜΕΡΟΣ ΣΤ: ΑΡΧΙΚΗ ΑΞΙΟΛΟΓΗΣΗ ΚΙΝΔΥΝΟΥ  -->
+    <!-- ═══════════════════════════════════════ -->
+    <div class="section" id="section-f">
+        <div class="section-header" style="background: linear-gradient(135deg, var(--section-f), #ec4899);" onclick="toggleSection(this)">
+            <h2>ΜΕΡΟΣ ΣΤ: ΑΡΧΙΚΗ ΑΞΙΟΛΟΓΗΣΗ ΚΙΝΔΥΝΟΥ</h2>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">ΣΤ.1.1 Προκαταρκτική Ταξινόμηση Κινδύνου <span class="required">*</span></div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="st11" id="st11_1" class="track-field"><label for="st11_1">Εμπίπτει σε απαγορευμένη χρήση (Άρθρο 5 Κανονισμού)</label></div>
+                    <div class="checkbox-item"><input type="radio" name="st11" id="st11_2" class="track-field"><label for="st11_2">Είναι υψηλού κινδύνου (Άρθρο 6 & Παράρτημα III)</label></div>
+                    <div class="checkbox-item"><input type="radio" name="st11" id="st11_3" class="track-field"><label for="st11_3">Είναι περιορισμένου κινδύνου (υποχρεώσεις διαφάνειας)</label></div>
+                    <div class="checkbox-item"><input type="radio" name="st11" id="st11_4" class="track-field"><label for="st11_4">Είναι ελάχιστου κινδύνου</label></div>
+                    <div class="checkbox-item"><input type="radio" name="st11" id="st11_5" class="track-field"><label for="st11_5">Δεν είμαι βέβαιος/η</label></div>
+                </div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Αιτιολόγηση επιλογής</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+                <div class="instruction-box">Οδηγία: Η Επιτροπή θα επιβεβαιώσει την ταξινόμηση. Δείτε τον Κανονισμό ΕΕ 2024/1689, Παράρτημα III και το εργαλείο AI Checker.</div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">ΣΤ.1.2 Εάν Υψηλού Κινδύνου – Κατηγορία (Παράρτημα III)</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="st12_1" class="track-field"><label for="st12_1">Βιομετρική ταυτοποίηση/κατηγοριοποίηση (Annex III, 1)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st12_2" class="track-field"><label for="st12_2">Διαχείριση κρίσιμων υποδομών (Annex III, 2)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st12_3" class="track-field"><label for="st12_3">Εκπαίδευση και επαγγελματική κατάρτιση (Annex III, 3)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st12_4" class="track-field"><label for="st12_4">Απασχόληση, διαχείριση εργαζομένων (Annex III, 4)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st12_5" class="track-field"><label for="st12_5">Πρόσβαση σε ουσιώδεις υπηρεσίες (Annex III, 5)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st12_6" class="track-field"><label for="st12_6">Επιβολή του νόμου (Annex III, 6)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st12_7" class="track-field"><label for="st12_7">Διαχείριση μετανάστευσης, ασύλου (Annex III, 7)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st12_8" class="track-field"><label for="st12_8">Απονομή δικαιοσύνης (Annex III, 8)</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">ΣΤ.2.1 Κίνδυνοι για Θεμελιώδη Δικαιώματα <span class="required">*</span></div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="st21_1" class="track-field"><label for="st21_1">Ιδιωτικότητα και προστασία δεδομένων</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st21_2" class="track-field"><label for="st21_2">Μη-διάκριση και ισότητα</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st21_3" class="track-field"><label for="st21_3">Ελευθερία έκφρασης/πληροφόρησης</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st21_4" class="track-field"><label for="st21_4">Δικαίωμα σε δίκαιη διαδικασία</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st21_5" class="track-field"><label for="st21_5">Ανθρώπινη αξιοπρέπεια</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st21_6" class="track-field"><label for="st21_6">Δεν εντοπίζονται κίνδυνοι</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Εξήγηση</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">ΣΤ.2.2 Ευάλωτες Ομάδες <span class="required">*</span></div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="st22_1" class="track-field"><label for="st22_1">Παιδιά/ανήλικους</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st22_2" class="track-field"><label for="st22_2">Άτομα με αναπηρία</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st22_3" class="track-field"><label for="st22_3">Ηλικιωμένους</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st22_4" class="track-field"><label for="st22_4">Μειονότητες</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st22_5" class="track-field"><label for="st22_5">Άτομα χαμηλού εισοδήματος</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st22_6" class="track-field"><label for="st22_6">Δεν εντοπίζονται επιπτώσεις σε ευάλωτες ομάδες</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλες ευάλωτες ομάδες:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Πώς θα προστατευτούν οι ευάλωτες ομάδες</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">ΣΤ.2.3 Κίνδυνοι Μεροληψίας/Διάκρισης (Algorithmic / System Bias) <span class="required">*</span></div>
+                <p style="font-size:0.85rem;">Εντοπίζετε κίνδυνο το σύστημα να δημιουργήσει ή να ενισχύσει μεροληψίες;</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="st23" id="st23_1" class="track-field"><label for="st23_1">Ναι</label></div>
+                    <div class="checkbox-item"><input type="radio" name="st23" id="st23_2" class="track-field"><label for="st23_2">Όχι</label></div>
+                    <div class="checkbox-item"><input type="radio" name="st23" id="st23_3" class="track-field"><label for="st23_3">Δεν είμαι βέβαιος/η</label></div>
+                </div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Εάν ναι, περιγράψτε</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Πώς σχεδιάζετε να αντιμετωπίσετε αυτούς τους κινδύνους</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">ΣΤ.3.1 Στρατηγική Μακροπρόθεσμης Βιωσιμότητας <span class="required">*</span></div>
+                <div class="field-hint">Πώς θα διασφαλιστεί η συνέχιση λειτουργίας του συστήματος μετά την παράδοση;</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="st31_1" class="track-field"><label for="st31_1">Εσωτερική ομάδα λειτουργίας/συντήρησης</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st31_2" class="track-field"><label for="st31_2">Σύμβαση συντήρησης με ανάδοχο (SLA)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st31_3" class="track-field"><label for="st31_3">Μεταφορά τεχνογνωσίας (knowledge transfer)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st31_4" class="track-field"><label for="st31_4">Ανανεώσιμη σύμβαση υπηρεσιών (SaaS)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="st31_5" class="track-field"><label for="st31_5">Δεν έχει αποφασιστεί</label></div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">ΣΤ.3.2 Δυνατότητα Κλιμάκωσης</div>
+                <p style="font-size:0.85rem;">Προβλέπεται επέκταση του συστήματος σε άλλες υπηρεσίες/φορείς;</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="st32" id="st32_1" class="track-field"><label for="st32_1">Ναι – Περιγράψτε:</label></div>
+                    <div class="checkbox-item"><input type="radio" name="st32" id="st32_2" class="track-field"><label for="st32_2">Υπό εξέταση</label></div>
+                    <div class="checkbox-item"><input type="radio" name="st32" id="st32_3" class="track-field"><label for="st32_3">Όχι, αφορά αποκλειστικά τον φορέα</label></div>
+                </div>
+                <input type="text" class="text-field-inline track-field" placeholder="Περιγραφή (αν ΝΑΙ)" style="width:100%; margin-top:0.5rem;">
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">ΣΤ.3.3 Περιβαλλοντικό Αποτύπωμα</div>
+                <p style="font-size:0.85rem;">Έχει εκτιμηθεί το ενεργειακό/περιβαλλοντικό αποτύπωμα της λύσης ΤΝ;</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="st33" id="st33_1" class="track-field"><label for="st33_1">Ναι – Αναφερθείτε σε αποτελέσματα</label></div>
+                    <div class="checkbox-item"><input type="radio" name="st33" id="st33_2" class="track-field"><label for="st33_2">Θα εκτιμηθεί</label></div>
+                    <div class="checkbox-item"><input type="radio" name="st33" id="st33_3" class="track-field"><label for="st33_3">Δεν εφαρμόζεται</label></div>
+                </div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Σχόλια</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- ΜΕΡΟΣ Ζ: ΧΡΟΝΟΔΙΑΓΡΑΜΜΑ ΚΑΙ ΠΟΡΟΙ     -->
+    <!-- ═══════════════════════════════════════ -->
+    <div class="section" id="section-g">
+        <div class="section-header" style="background: linear-gradient(135deg, var(--section-g), #6366f1);" onclick="toggleSection(this)">
+            <h2>ΜΕΡΟΣ Ζ: ΧΡΟΝΟΔΙΑΓΡΑΜΜΑ ΚΑΙ ΠΟΡΟΙ</h2>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Ζ.1.1 Ημερομηνίες <span class="required">*</span></div>
+                <div class="labeled-field"><span>Προγραμματισμένη προκήρυξη:</span><input type="date" class="text-field-inline track-field"></div>
+                <div class="labeled-field"><span>Εκτιμώμενη ανάθεση:</span><input type="date" class="text-field-inline track-field"></div>
+                <div class="labeled-field"><span>Έναρξη ανάπτυξης:</span><input type="date" class="text-field-inline track-field"></div>
+                <div class="labeled-field"><span>Έναρξη παραγωγής:</span><input type="date" class="text-field-inline track-field"></div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Ζ.2.1 Εκτιμώμενος Προϋπολογισμός</div>
+                <div class="labeled-field"><span>Συνολικός προϋπολογισμός (€):</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>Λογισμικό/Licenses (€):</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>Ανάπτυξη/Υπηρεσίες (€):</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>Υποδομή (€):</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field"><span>Εκπαίδευση (€):</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                <div class="labeled-field" style="margin-top:0.75rem; border-top:1px solid var(--border); padding-top:0.75rem;"><span>Ετήσιο κόστος λειτουργίας (€):</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Ζ.2.2 Πηγές Χρηματοδότησης</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="z22_1" class="track-field"><label for="z22_1">Τακτικός προϋπολογισμός</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="z22_2" class="track-field"><label for="z22_2">Εθνικό Πρόγραμμα Ανάπτυξης</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="z22_3" class="track-field"><label for="z22_3">Ευρωπαϊκοί πόροι</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Ζ.2.3 Ανάλυση Κόστους – Οφέλους</div>
+                <p style="font-size:0.85rem;">Έχει πραγματοποιηθεί προκαταρκτική ανάλυση κόστους - οφέλους;</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="z23" id="z23_1" class="track-field"><label for="z23_1">Ναι</label></div>
+                    <div class="checkbox-item"><input type="radio" name="z23" id="z23_2" class="track-field"><label for="z23_2">Όχι</label></div>
+                    <div class="checkbox-item"><input type="radio" name="z23" id="z23_3" class="track-field"><label for="z23_3">Υπό κατάρτιση</label></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- ΜΕΡΟΣ Η: ΑΡΧΙΚΕΣ ΑΠΑΙΤΗΣΕΙΣ ΣΥΜΜΟΡΦΩΣΗΣ -->
+    <!-- ═══════════════════════════════════════ -->
+    <div class="section" id="section-h">
+        <div class="section-header" style="background: linear-gradient(135deg, var(--section-h), #34d399);" onclick="toggleSection(this)">
+            <h2>ΜΕΡΟΣ Η: ΑΡΧΙΚΕΣ ΑΠΑΙΤΗΣΕΙΣ ΣΥΜΜΟΡΦΩΣΗΣ</h2>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Η.1.1 Προβλεπόμενες Εκτιμήσεις <span class="required">*</span> (Βάσει αρχικής ανάλυσης)</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="h11_1" class="track-field"><label for="h11_1">FRIA – Fundamental Rights Impact Assessment (Άρθρο 27 Κανονισμού ΕΕ)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="h11_2" class="track-field"><label for="h11_2">DPIA – Data Protection Impact Assessment (Άρθρο 35 ΓΚΠΔ)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="h11_3" class="track-field"><label for="h11_3">Αλγοριθμική Εκτίμηση Αντικτύπου</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="h11_4" class="track-field"><label for="h11_4">Ηθική Αξιολόγηση</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="h11_5" class="track-field"><label for="h11_5">Εκτίμηση Περιβαλλοντικού Αποτυπώματος</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλες:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Η.2.1 Σχέδιο Ενημέρωσης Πολιτών</div>
+                <p style="font-size:0.85rem;">Πώς θα ενημερώσετε τους επηρεαζόμενους;</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="h21_1" class="track-field"><label for="h21_1">Δημόσια ανακοίνωση</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="h21_2" class="track-field"><label for="h21_2">Ενημέρωση στην ιστοσελίδα</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="h21_3" class="track-field"><label for="h21_3">Ενημέρωση κατά τη χρήση</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="h21_4" class="track-field"><label for="h21_4">Πολιτική απορρήτου</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+
+                <p style="font-size:0.85rem; font-weight:600; margin-top:0.75rem;">Τι θα αναφέρετε;</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="h21b_1" class="track-field"><label for="h21b_1">Ότι χρησιμοποιείται ΤΝ</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="h21b_2" class="track-field"><label for="h21b_2">Τον σκοπό της χρήσης</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="h21b_3" class="track-field"><label for="h21b_3">Τα δικαιώματα των ατόμων</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="h21b_4" class="track-field"><label for="h21b_4">Τρόπο αμφισβήτησης αποφάσεων</label></div>
+                </div>
+                <div class="labeled-field"><span>Άλλο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Η.3.1 Εξηγησιμότητα Αποφάσεων <span class="required">*</span></div>
+                <p style="font-size:0.85rem;">Θα μπορεί το σύστημα να εξηγήσει τις αποφάσεις του σε απλή γλώσσα;</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="h31" id="h31_1" class="track-field"><label for="h31_1">Ναι – Ο αλγόριθμος θα παράγει αιτιολόγηση (explainable AI)</label></div>
+                    <div class="checkbox-item"><input type="radio" name="h31" id="h31_2" class="track-field"><label for="h31_2">Μερικώς – Ορισμένες αποφάσεις θα εξηγούνται</label></div>
+                    <div class="checkbox-item"><input type="radio" name="h31" id="h31_3" class="track-field"><label for="h31_3">Δεν εφαρμόζεται (μη-ερμηνεύσιμο μοντέλο – black box)</label></div>
+                    <div class="checkbox-item"><input type="radio" name="h31" id="h31_4" class="track-field"><label for="h31_4">Δεν έχει αποφασιστεί</label></div>
+                </div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Πώς θα ενημερώνονται οι πολίτες για τη λογική της απόφασης</p>
+                <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Η.3.2 Μηχανισμός Αμφισβήτησης (Right to Contest) <span class="required">*</span></div>
+                <p style="font-size:0.85rem;">Θα υπάρχει μηχανισμός για τους πολίτες να αμφισβητήσουν ή να ζητήσουν επανεξέταση αυτοματοποιημένων αποφάσεων;</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="radio" name="h32" id="h32_1" class="track-field"><label for="h32_1">Ναι – Περιγράψτε:</label></div>
+                    <div class="checkbox-item"><input type="radio" name="h32" id="h32_2" class="track-field"><label for="h32_2">Όχι – Αιτιολόγηση:</label></div>
+                    <div class="checkbox-item"><input type="radio" name="h32" id="h32_3" class="track-field"><label for="h32_3">Υπό μελέτη</label></div>
+                </div>
+                <textarea class="text-field track-field" rows="2" placeholder="Περιγραφή / Αιτιολόγηση" style="margin-top:0.5rem;"></textarea>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- ΜΕΡΟΣ Ι: ΔΗΛΩΣΕΙΣ ΚΑΙ ΥΠΟΓΡΑΦΕΣ       -->
+    <!-- ═══════════════════════════════════════ -->
+    <div class="section" id="section-i">
+        <div class="section-header" style="background: linear-gradient(135deg, var(--section-i), #9ca3af);" onclick="toggleSection(this)">
+            <h2>ΜΕΡΟΣ Ι: ΔΗΛΩΣΕΙΣ ΚΑΙ ΥΠΟΓΡΑΦΕΣ</h2>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Ι.1 Δηλώσεις <span class="required">*</span></div>
+                <p style="font-size:0.85rem; margin-bottom:0.75rem;">Δηλώνω/ούμε ότι:</p>
+                <div class="declaration-item"><input type="checkbox" id="dec1" class="track-field"><label for="dec1">Όλες οι πληροφορίες είναι ακριβείς κατά την καλύτερή μας γνώση</label></div>
+                <div class="declaration-item"><input type="checkbox" id="dec2" class="track-field"><label for="dec2">Έχουμε συμβουλευτεί ή θα συμβουλευτούμε τον DPO</label></div>
+                <div class="declaration-item"><input type="checkbox" id="dec3" class="track-field"><label for="dec3">Έχουμε λάβει υπόψη τις αρχές του Κανονισμού ΕΕ για την ΤΝ (EU AI Act)</label></div>
+                <div class="declaration-item"><input type="checkbox" id="dec4" class="track-field"><label for="dec4">Έχουμε διενεργήσει ή θα διενεργήσουμε εσωτερική διαβούλευση με τους βασικούς ενδιαφερόμενους</label></div>
+                <div class="declaration-item"><input type="checkbox" id="dec5" class="track-field"><label for="dec5">Κατανοούμε ότι η έγκριση του Σταδίου 1 δεν αποτελεί τελική έγκριση λειτουργίας</label></div>
+                <div class="declaration-item"><input type="checkbox" id="dec6" class="track-field"><label for="dec6">Αναγνωρίζουμε ότι ευθύνη για τη νόμιμη και ηθική χρήση του ΑΙ παραμένει στον φορέα</label></div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="font-size:0.85rem;">Ι.2 Υπογραφές</div>
+
+                <div class="signature-block">
+                    <h4>Νόμιμος Εκπρόσωπος Φορέα</h4>
+                    <div class="labeled-field"><span>Ονοματεπώνυμο:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                    <div class="labeled-field"><span>Θέση:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                    <div class="labeled-field"><span>Υπογραφή & Ημερομηνία:</span><input type="date" class="text-field-inline track-field"></div>
+                    <p style="font-size:0.85rem; color:var(--text-light); margin-top:0.5rem;">Σφραγίδα Φορέα</p>
+                </div>
+
+                <div class="signature-block">
+                    <h4>DPO</h4>
+                    <div class="labeled-field"><span>Ονοματεπώνυμο DPO:</span><input type="text" class="text-field-inline track-field" placeholder="_______________________________________________"></div>
+                    <div class="labeled-field"><span>Υπογραφή & Ημερομηνία:</span><input type="date" class="text-field-inline track-field"></div>
+                    <p style="font-size:0.85rem; margin-top:0.5rem;">Σχόλια DPO</p>
+                    <textarea class="text-field track-field" rows="2" placeholder="_______________________________________________"></textarea>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- ACTION BUTTONS -->
+<div class="action-bar">
+    <button class="action-btn btn-expand" onclick="toggleAll()">
+        <span id="toggleAllIcon">▼</span> Όλα
+    </button>
+    <button class="action-btn btn-print" onclick="window.print()">
+        🖨️ Εκτύπωση
+    </button>
+</div>
+
+<script>
+    // Toggle section
+    function toggleSection(header) {
+        header.classList.toggle('collapsed');
+        const body = header.nextElementSibling;
+        body.classList.toggle('collapsed');
+    }
+
+    // Toggle all
+    let allExpanded = true;
+    function toggleAll() {
+        allExpanded = !allExpanded;
+        document.querySelectorAll('.section-header').forEach(h => {
+            if (allExpanded) {
+                h.classList.remove('collapsed');
+                h.nextElementSibling.classList.remove('collapsed');
+            } else {
+                h.classList.add('collapsed');
+                h.nextElementSibling.classList.add('collapsed');
+            }
+        });
+        document.getElementById('toggleAllIcon').textContent = allExpanded ? '▼' : '▶';
+    }
+
+    // Word count
+    function updateWordCount(textarea, min, max) {
+        const words = textarea.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+        const counter = textarea.nextElementSibling;
+        if (counter && counter.classList.contains('word-count')) {
+            counter.textContent = `${words} λέξεις (στόχος: ${min > 0 ? min + '-' : ''}${max})`;
+            if (words >= min && words <= max) {
+                counter.style.color = '#16a34a';
+            } else if (words > max) {
+                counter.style.color = '#dc2626';
+            } else {
+                counter.style.color = '#64748b';
+            }
+        }
+        updateProgress();
+    }
+
+    // Progress tracking
+    function updateProgress() {
+        const fields = document.querySelectorAll('.track-field');
+        let filled = 0;
+        fields.forEach(f => {
+            if (f.type === 'checkbox' || f.type === 'radio') {
+                if (f.checked) filled++;
+            } else if (f.tagName === 'SELECT') {
+                if (f.value) filled++;
+            } else {
+                if (f.value && f.value.trim()) filled++;
+            }
+        });
+        const pct = Math.round((filled / fields.length) * 100);
+        document.getElementById('progressBar').style.width = pct + '%';
+        document.getElementById('progressText').textContent = pct + '% συμπληρωμένο (' + filled + '/' + fields.length + ' πεδία)';
+    }
+
+    // Attach listeners
+    document.querySelectorAll('.track-field').forEach(f => {
+        f.addEventListener('input', updateProgress);
+        f.addEventListener('change', updateProgress);
+    });
+
+    // Active nav pill on scroll
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+                const id = entry.target.id;
+                const pill = document.querySelector(`.nav-pill[href="#${id}"]`);
+                if (pill) pill.classList.add('active');
+            }
+        });
+    }, { threshold: 0.3 });
+
+    document.querySelectorAll('.section, .summary-card').forEach(s => observer.observe(s));
+
+    // Smooth scroll
+    document.querySelectorAll('.nav-pill').forEach(pill => {
+        pill.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.querySelector(pill.getAttribute('href'));
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+
+    // Init
+    updateProgress();
+</script>
+
+</body>
+</html>
